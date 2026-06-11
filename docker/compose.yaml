@@ -1,14 +1,14 @@
 services:
-  mineru-openai-server:
-    image: mineru:latest
-    container_name: mineru-openai-server
+  mineros-openai-server:
+    image: mineros:latest
+    container_name: mineros-openai-server
     restart: always
     profiles: ["openai-server"]
     ports:
       - 30000:30000
     environment:
       MINERU_MODEL_SOURCE: local
-    entrypoint: mineru-openai-server
+    entrypoint: mineros-openai-server
     command:
       --host 0.0.0.0
       --port 30000
@@ -24,19 +24,19 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["0"]  # Modify for multiple GPUs: ["0", "1"]
+              device_ids: ["0"] # Modify for multiple GPUs: ["0", "1"]
               capabilities: [gpu]
 
-  mineru-api:
-    image: mineru:latest
-    container_name: mineru-api
+  mineros-api:
+    image: mineros:latest
+    container_name: mineros-api
     restart: always
     profiles: ["api"]
     ports:
       - 8000:8000
     environment:
       MINERU_MODEL_SOURCE: local
-    entrypoint: mineru-api
+    entrypoint: mineros-api
     command:
       --host 0.0.0.0
       --port 8000
@@ -53,27 +53,27 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["0"]  # Modify for multiple GPUs: ["0", "1"]
+              device_ids: ["0"] # Modify for multiple GPUs: ["0", "1"]
               capabilities: [gpu]
 
-  mineru-router:
-    image: mineru:latest
-    container_name: mineru-router
+  mineros-router:
+    image: mineros:latest
+    container_name: mineros-router
     restart: always
     profiles: ["router"]
     ports:
       - 8002:8002
     environment:
       MINERU_MODEL_SOURCE: local
-    entrypoint: mineru-router
+    entrypoint: mineros-router
     command:
       --host 0.0.0.0
       --port 8002
       --local-gpus auto
-      # To aggregate existing mineru-api services instead of starting local workers:
+      # To aggregate existing mineros-api services instead of starting local workers:
       # --local-gpus none
-      # --upstream-url http://mineru-api:8000
-      # --upstream-url http://mineru-api-2:8000
+      # --upstream-url http://mineros-api:8000
+      # --upstream-url http://mineros-api-2:8000
       # parameters for vllm-engine
       # --gpu-memory-utilization 0.5  # If encountering VRAM shortage, reduce the KV cache size by this parameter; if VRAM issues persist, try lowering it further to `0.4` or below.
     ulimits:
@@ -87,19 +87,19 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["0"]  # Modify for multiple GPUs: ["0", "1"]
+              device_ids: ["0"] # Modify for multiple GPUs: ["0", "1"]
               capabilities: [gpu]
 
-  mineru-gradio:
-    image: mineru:latest
-    container_name: mineru-gradio
+  mineros-gradio:
+    image: mineros:latest
+    container_name: mineros-gradio
     restart: always
     profiles: ["gradio"]
     ports:
       - 7860:7860
     environment:
       MINERU_MODEL_SOURCE: local
-    entrypoint: mineru-gradio
+    entrypoint: mineros-gradio
     command:
       --server-name 0.0.0.0
       --server-port 7860
@@ -116,5 +116,5 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ["0"]  # Modify for multiple GPUs: ["0", "1"]
+              device_ids: ["0"] # Modify for multiple GPUs: ["0", "1"]
               capabilities: [gpu]

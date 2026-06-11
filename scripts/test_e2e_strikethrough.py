@@ -19,13 +19,13 @@ from mineros.backend.pipeline.pipeline_middle_json_mkcontent import _apply_span_
 
 cases = [
     (["strikethrough"], "hello", "~~hello~~"),
-    (["bold", "strikethrough"], "hi", "~~**hi**~~"),
-    (["italic", "strikethrough"], "yo", "~~*yo*~~"),
-    (["bold", "italic", "strikethrough"], "all", "~~***all***~~"),
+    (["bold", "strikethrough"], "hi", "**~~hi~~**"),
+    (["italic", "strikethrough"], "yo", "*~~yo~~*"),
+    (["bold", "italic", "strikethrough"], "all", "***~~all~~***"),
     ([], "plain", "plain"),
 ]
 for style, text, expected in cases:
-    result = _apply_span_style(text, style)
+    result = _apply_span_style({"style": style}, text)
     status = "OK" if result == expected else f"FAIL (got {result!r})"
     print(f"  style={style} input={text!r} -> {result!r}  {status}")
 
