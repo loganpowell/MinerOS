@@ -1,5 +1,5 @@
 import re
-from mineru.utils.strikethrough_utils import _substitute_struck_phrases
+from mineros.utils.strikethrough_utils import _substitute_struck_phrases
 
 toc_sample = (
     "# ~~TABLE OF CONTENTS~~\n\n# ~~GENERAL~~\n\n"

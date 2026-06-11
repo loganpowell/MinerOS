@@ -4,11 +4,11 @@ import sys
 from pathlib import Path
 
 # ── Rendering tests ────────────────────────────────────────────────────────────
-from mineru.backend.pipeline.pipeline_middle_json_mkcontent import (
+from mineros.backend.pipeline.pipeline_middle_json_mkcontent import (
     merge_para_with_text,
     escape_special_markdown_char,
 )
-from mineru.utils.enum_class import ContentType, BlockType
+from mineros.utils.enum_class import ContentType, BlockType
 
 
 def blk(spans):

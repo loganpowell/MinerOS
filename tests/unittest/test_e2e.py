@@ -5,17 +5,17 @@ from pathlib import Path
 from loguru import logger
 from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz
-from mineru.cli.common import (
+from mineros.cli.common import (
     convert_pdf_bytes_to_bytes,
     prepare_env,
     read_fn,
 )
-from mineru.data.data_reader_writer import FileBasedDataWriter
-from mineru.utils.enum_class import MakeMode
-from mineru.backend.pipeline.pipeline_analyze import (
+from mineros.data.data_reader_writer import FileBasedDataWriter
+from mineros.utils.enum_class import MakeMode
+from mineros.backend.pipeline.pipeline_analyze import (
     doc_analyze_streaming as pipeline_doc_analyze_streaming,
 )
-from mineru.backend.pipeline.pipeline_middle_json_mkcontent import (
+from mineros.backend.pipeline.pipeline_middle_json_mkcontent import (
     union_make as pipeline_union_make,
 )
 

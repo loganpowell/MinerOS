@@ -1,6 +1,6 @@
 """Verify position-aware substitution prevents false positives."""
 
-from mineru.utils.strikethrough_utils import _substitute_struck_phrases
+from mineros.utils.strikethrough_utils import _substitute_struck_phrases
 
 # Simulated span content from b1. SOLICITATION body text
 body_content = (

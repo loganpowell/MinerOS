@@ -3,13 +3,13 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mineru"
+name = "mineros"
 dynamic = ["version"]
 license = { text = "Apache-2.0" }
 description = "A practical tool for converting PDF to Markdown"
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
-keywords = ["magic-pdf", "mineru", "MinerU", "convert", "pdf", "markdown"]
+keywords = ["magic-pdf", "mineros", "MinerU", "convert", "pdf", "markdown"]
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3.10",
@@ -56,7 +56,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-    "mineru[core]",
+    "mineros[core]",
     "pytest",
     "pytest-cov",
     "coverage",
@@ -94,15 +94,15 @@ gradio = [
     "gradio-pdf>=0.0.22",
 ]
 core = [
-    "mineru[vlm]",
-    "mineru[pipeline]",
-    "mineru[gradio]",
+    "mineros[vlm]",
+    "mineros[pipeline]",
+    "mineros[gradio]",
 ]
 all = [
-    "mineru[core]",
-    "mineru[mlx] ; sys_platform == 'darwin'",
-    "mineru[vllm] ; sys_platform == 'linux'",
-    "mineru[lmdeploy] ; sys_platform == 'win32'",
+    "mineros[core]",
+    "mineros[mlx] ; sys_platform == 'darwin'",
+    "mineros[vllm] ; sys_platform == 'linux'",
+    "mineros[lmdeploy] ; sys_platform == 'win32'",
 ]
 
 [project.urls]
@@ -112,36 +112,36 @@ repository = "https://github.com/opendatalab/MinerU"
 issues = "https://github.com/opendatalab/MinerU/issues"
 
 [project.scripts]
-mineru = "mineru.cli.client:main"
-mineru-vllm-server = "mineru.cli.vlm_server:vllm_server"
-mineru-lmdeploy-server = "mineru.cli.vlm_server:lmdeploy_server"
-mineru-openai-server = "mineru.cli.vlm_server:openai_server"
-mineru-models-download = "mineru.cli.models_download:download_models"
-mineru-api = "mineru.cli.fast_api:main"
-mineru-router = "mineru.cli.router:main"
-mineru-gradio = "mineru.cli.gradio_app:main"
+mineros = "mineros.cli.client:main"
+mineros-vllm-server = "mineros.cli.vlm_server:vllm_server"
+mineros-lmdeploy-server = "mineros.cli.vlm_server:lmdeploy_server"
+mineros-openai-server = "mineros.cli.vlm_server:openai_server"
+mineros-models-download = "mineros.cli.models_download:download_models"
+mineros-api = "mineros.cli.fast_api:main"
+mineros-router = "mineros.cli.router:main"
+mineros-gradio = "mineros.cli.gradio_app:main"
 
 [tool.setuptools.dynamic]
-version = { attr = "mineru.version.__version__" }
+version = { attr = "mineros.version.__version__" }
 
 [tool.setuptools.packages.find]
-include = ["mineru*"]
+include = ["mineros*"]
 namespaces = false
 
 [tool.setuptools.package-data]
-"mineru" = ["resources/**"]
-"mineru.model.utils.pytorchocr.utils" = ["resources/**"]
+"mineros" = ["resources/**"]
+"mineros.model.utils.pytorchocr.utils" = ["resources/**"]
 
 [tool.setuptools]
 include-package-data = true
 zip-safe = false
 
 [tool.pytest.ini_options]
-addopts = "-s --cov=mineru --cov-report html"
+addopts = "-s --cov=mineros --cov-report html"
 
 [tool.coverage.run]
 command_line = "-m pytest tests/unittest/test_e2e.py"
-source = ["mineru/"]
+source = ["mineros/"]
 omit = [
     "*/gradio_app.py",
     "*/models_download.py",

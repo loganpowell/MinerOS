@@ -8,8 +8,8 @@ import pypdf
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTChar, LTAnno, LTTextBox, LTTextLine
 import pypdfium2 as pdfium
-from mineru.utils.pdf_text_tool import get_page_chars
-from mineru.utils.pdfium_guard import pdfium_guard
+from mineros.utils.pdf_text_tool import get_page_chars
+from mineros.utils.pdfium_guard import pdfium_guard
 from pdftext.pdf.pages import assign_scripts, get_blocks, get_lines, get_spans
 
 pdf_path = Path(__file__).parent.parent / "demo/pdfs/strikethrough.pdf"

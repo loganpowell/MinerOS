@@ -2,9 +2,9 @@
 
 import pypdf, io
 import pypdfium2 as pdfium
-from mineru.utils.strikethrough_utils import _parse_thin_horizontal_lines
-from mineru.utils.pdfium_guard import pdfium_guard
-from mineru.utils.pdf_text_tool import get_page_chars
+from mineros.utils.strikethrough_utils import _parse_thin_horizontal_lines
+from mineros.utils.pdfium_guard import pdfium_guard
+from mineros.utils.pdf_text_tool import get_page_chars
 
 pdf_path = "demo/pdfs/22802bid03_appendixbtracked_0.pdf"
 with open(pdf_path, "rb") as f:
@@ -41,7 +41,7 @@ for lx0, ly, lx1 in sorted(relevant_lines, key=lambda x: page_height - x[1]):
 
 # Now find characters near y_disp ~80-130 (where "Contractor may" area is)
 print(f"\nChars near 'Contractor may' region (y_disp 60-160):")
-from mineru.utils.strikethrough_utils import _VERT_TOLERANCE_FACTOR as VTF
+from mineros.utils.strikethrough_utils import _VERT_TOLERANCE_FACTOR as VTF
 
 area_chars = []
 for c in chars:

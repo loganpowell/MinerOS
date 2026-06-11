@@ -2,7 +2,7 @@
 
 import pypdf
 import io
-from mineru.utils.strikethrough_utils import (
+from mineros.utils.strikethrough_utils import (
     _parse_thin_horizontal_lines,
     _tag_strikethrough_in_para_blocks,
     tag_strikethrough_in_pdf_info,

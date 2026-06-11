@@ -9,13 +9,13 @@ import sys
 import pypdf
 
 # Build synthetic middle JSON with known struck spans
-from mineru.utils.strikethrough_utils import tag_strikethrough_in_pdf_info
-from mineru.backend.pipeline.pipeline_middle_json_mkcontent import union_make
-from mineru.utils.enum_class import MakeMode
+from mineros.utils.strikethrough_utils import tag_strikethrough_in_pdf_info
+from mineros.backend.pipeline.pipeline_middle_json_mkcontent import union_make
+from mineros.utils.enum_class import MakeMode
 
 # Test A: Rendering — does _apply_span_style render strikethrough correctly?
 print("=== Test A: _apply_span_style rendering ===")
-from mineru.backend.pipeline.pipeline_middle_json_mkcontent import _apply_span_style
+from mineros.backend.pipeline.pipeline_middle_json_mkcontent import _apply_span_style
 
 cases = [
     (["strikethrough"], "hello", "~~hello~~"),

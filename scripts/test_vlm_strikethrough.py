@@ -2,7 +2,7 @@
 
 import json
 import copy
-from mineru.utils.strikethrough_utils import (
+from mineros.utils.strikethrough_utils import (
     _parse_thin_horizontal_lines,
     _get_struck_phrases_from_page,
     substitute_strikethrough_in_vlm_pdf_info,
@@ -10,7 +10,7 @@ from mineru.utils.strikethrough_utils import (
 import pypdf
 import pypdfium2 as pdfium
 import io
-from mineru.utils.pdfium_guard import pdfium_guard
+from mineros.utils.pdfium_guard import pdfium_guard
 
 pdf_bytes = open("demo/pdfs/strikethrough.pdf", "rb").read()
 pypdf_reader = pypdf.PdfReader(io.BytesIO(pdf_bytes))
@@ -35,7 +35,7 @@ try:
     test_content = (
         "3. Three and one-half Four percent of funds may be allocated to NVTC"
     )
-    from mineru.utils.strikethrough_utils import _substitute_struck_phrases
+    from mineros.utils.strikethrough_utils import _substitute_struck_phrases
 
     result = _substitute_struck_phrases(test_content, phrases)
     print(f"\nSubstitution test:")

@@ -4,7 +4,7 @@ import sys
 
 sys.path.insert(0, "/Users/logan.powell/Documents/projects/ctd/MinerU")
 import re
-from mineru.utils.strikethrough_utils import _substitute_struck_phrases
+from mineros.utils.strikethrough_utils import _substitute_struck_phrases
 
 # Phrases from page 2 (top-20 after fixes)
 page2_phrases = [

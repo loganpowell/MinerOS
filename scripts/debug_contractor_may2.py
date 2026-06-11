@@ -2,12 +2,12 @@
 
 import pypdf, io
 import pypdfium2 as pdfium
-from mineru.utils.strikethrough_utils import (
+from mineros.utils.strikethrough_utils import (
     _parse_thin_horizontal_lines,
     _get_struck_phrases_from_page,
 )
-from mineru.utils.pdfium_guard import pdfium_guard
-from mineru.utils.pdf_text_tool import get_page_chars
+from mineros.utils.pdfium_guard import pdfium_guard
+from mineros.utils.pdf_text_tool import get_page_chars
 
 _VERT_TOLERANCE_FACTOR = 0.40
 

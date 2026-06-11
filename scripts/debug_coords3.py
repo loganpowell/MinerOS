@@ -6,8 +6,8 @@ vs pdftext spans (display coords y=0 top). Prove it works on page 4.
 from pathlib import Path
 import pypdf
 import pypdfium2 as pdfium
-from mineru.utils.pdf_text_tool import get_page_chars
-from mineru.utils.pdfium_guard import pdfium_guard
+from mineros.utils.pdf_text_tool import get_page_chars
+from mineros.utils.pdfium_guard import pdfium_guard
 from pdftext.pdf.pages import assign_scripts, get_blocks, get_lines, get_spans
 
 pdf_path = Path(__file__).parent.parent / "demo/pdfs/strikethrough.pdf"
