@@ -4,13 +4,17 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - "**.md"
+    paths:
+      - "mineros/**"
+      - "tests/**"
+      - "pyproject.toml"
   pull_request:
     branches:
       - main
-    paths-ignore:
-      - "**.md"
+    paths:
+      - "mineros/**"
+      - "tests/**"
+      - "pyproject.toml"
 
 jobs:
   cli-test:
