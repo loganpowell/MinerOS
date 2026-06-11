@@ -6,10 +6,10 @@ build-backend = "setuptools.build_meta"
 name = "mineros"
 dynamic = ["version"]
 license = { text = "Apache-2.0" }
-description = "A practical tool for converting PDF to Markdown"
+description = "Apache 2.0 document parsing engine: PDF/DOCX/images → Markdown/JSON with tracked-changes (strikethrough) support"
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
-keywords = ["magic-pdf", "mineros", "MinerU", "convert", "pdf", "markdown"]
+keywords = ["mineros", "pdf", "markdown", "document-parsing", "ocr", "vlm", "strikethrough", "tracked-changes"]
 classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3.10",
@@ -106,10 +106,9 @@ all = [
 ]
 
 [project.urls]
-homepage = "https://mineru.net/"
-documentation = "https://opendatalab.github.io/MinerU/"
-repository = "https://github.com/opendatalab/MinerU"
-issues = "https://github.com/opendatalab/MinerU/issues"
+homepage = "https://github.com/loganpowell/MinerOS"
+repository = "https://github.com/loganpowell/MinerOS"
+issues = "https://github.com/loganpowell/MinerOS/issues"
 
 [project.scripts]
 mineros = "mineros.cli.client:main"
