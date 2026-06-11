@@ -4,7 +4,6 @@ from PIL import Image
 import cv2
 import numpy as np
 import onnxruntime
-from loguru import logger
 from tqdm import tqdm
 
 from mineros.backend.pipeline.model_list import AtomicModel

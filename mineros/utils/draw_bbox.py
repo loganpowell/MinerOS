@@ -20,25 +20,29 @@ def cal_canvas_rect(page, bbox):
         rect: [x0, y0, width, height] representing the rectangle coordinates on the canvas.
     """
     page_width, page_height = float(page.cropbox[2]), float(page.cropbox[3])
-    
-    actual_width = page_width    # The width of the final PDF display
+
+    actual_width = page_width  # The width of the final PDF display
     actual_height = page_height  # The height of the final PDF display
-    
+
     rotation_obj = page.get("/Rotate", 0)
     try:
-        rotation = int(rotation_obj) % 360  # cast rotation to int to handle IndirectObject
+        rotation = (
+            int(rotation_obj) % 360
+        )  # cast rotation to int to handle IndirectObject
     except (ValueError, TypeError) as e:
-        logger.warning(f"Invalid /Rotate value {rotation_obj!r} on page; defaulting to 0. Error: {e}")
+        logger.warning(
+            f"Invalid /Rotate value {rotation_obj!r} on page; defaulting to 0. Error: {e}"
+        )
         rotation = 0
-    
+
     if rotation in [90, 270]:
         # PDF is rotated 90 degrees or 270 degrees, and the width and height need to be swapped
         actual_width, actual_height = actual_height, actual_width
-        
+
     x0, y0, x1, y1 = bbox
     rect_w = abs(x1 - x0)
     rect_h = abs(y1 - y0)
-    
+
     if rotation == 270:
         rect_w, rect_h = rect_h, rect_w
         x0 = actual_height - y1
@@ -48,12 +52,12 @@ def cal_canvas_rect(page, bbox):
         # y0 stays the same
     elif rotation == 90:
         rect_w, rect_h = rect_h, rect_w
-        x0, y0 = y0, x0 
+        x0, y0 = y0, x0
     else:
         # rotation == 0
         y0 = page_height - y1
-    
-    rect = [x0, y0, rect_w, rect_h]        
+
+    rect = [x0, y0, rect_w, rect_h]
     return rect
 
 
@@ -62,7 +66,7 @@ def draw_bbox_without_number(i, bbox_list, page, c, rgb_config, fill_config):
     page_data = bbox_list[i]
 
     for bbox in page_data:
-        rect = cal_canvas_rect(page, bbox)  # Define the rectangle  
+        rect = cal_canvas_rect(page, bbox)  # Define the rectangle
 
         if fill_config:  # filled rectangle
             c.setFillColorRGB(new_rgb[0], new_rgb[1], new_rgb[2], 0.3)
@@ -73,16 +77,18 @@ def draw_bbox_without_number(i, bbox_list, page, c, rgb_config, fill_config):
     return c
 
 
-def draw_bbox_with_number(i, bbox_list, page, c, rgb_config, fill_config, draw_bbox=True):
+def draw_bbox_with_number(
+    i, bbox_list, page, c, rgb_config, fill_config, draw_bbox=True
+):
     new_rgb = [float(color) / 255 for color in rgb_config]
     page_data = bbox_list[i]
     # 强制转换为 float
-    page_width, page_height = float(page.cropbox[2]), float(page.cropbox[3])
+    _page_width, _page_height = float(page.cropbox[2]), float(page.cropbox[3])
 
     for j, bbox in enumerate(page_data):
         # 确保bbox的每个元素都是float
-        rect = cal_canvas_rect(page, bbox)  # Define the rectangle  
-        
+        rect = cal_canvas_rect(page, bbox)  # Define the rectangle
+
         if draw_bbox:
             if fill_config:
                 c.setFillColorRGB(*new_rgb, 0.3)
@@ -92,11 +98,13 @@ def draw_bbox_with_number(i, bbox_list, page, c, rgb_config, fill_config, draw_b
                 c.rect(rect[0], rect[1], rect[2], rect[3], stroke=1, fill=0)
         c.setFillColorRGB(*new_rgb, 1.0)
         c.setFontSize(size=10)
-        
+
         c.saveState()
         rotation_obj = page.get("/Rotate", 0)
         try:
-            rotation = int(rotation_obj) % 360  # cast rotation to int to handle IndirectObject
+            rotation = (
+                int(rotation_obj) % 360
+            )  # cast rotation to int to handle IndirectObject
         except (ValueError, TypeError):
             logger.warning(f"Invalid /Rotate value: {rotation_obj!r}, defaulting to 0")
             rotation = 0
@@ -109,7 +117,7 @@ def draw_bbox_with_number(i, bbox_list, page, c, rgb_config, fill_config, draw_b
             c.translate(rect[0] - 2, rect[1] + 10)
         elif rotation == 270:
             c.translate(rect[0] + rect[2] - 10, rect[1] - 2)
-            
+
         c.rotate(rotation)
         c.drawString(0, 0, str(j + 1))
         c.restoreState()
@@ -141,8 +149,8 @@ def draw_layout_bbox(pdf_info, pdf_bytes, out_path, filename):
         list_items = []
         indices = []
 
-        for dropped_bbox in page['discarded_blocks']:
-            page_dropped_list.append(dropped_bbox['bbox'])
+        for dropped_bbox in page["discarded_blocks"]:
+            page_dropped_list.append(dropped_bbox["bbox"])
         dropped_bbox_list.append(page_dropped_list)
         for block in page["para_blocks"]:
             bbox = block["bbox"]
@@ -192,7 +200,11 @@ def draw_layout_bbox(pdf_info, pdf_bytes, out_path, filename):
                 imgs_body.append(bbox)
             elif block["type"] == BlockType.TITLE:
                 titles.append(bbox)
-            elif block["type"] in [BlockType.TEXT, BlockType.REF_TEXT, BlockType.ABSTRACT]:
+            elif block["type"] in [
+                BlockType.TEXT,
+                BlockType.REF_TEXT,
+                BlockType.ABSTRACT,
+            ]:
                 texts.append(bbox)
             elif block["type"] == BlockType.INTERLINE_EQUATION:
                 interline_equations.append(bbox)
@@ -237,7 +249,12 @@ def draw_layout_bbox(pdf_info, pdf_bytes, out_path, filename):
             ]:
                 bbox = block["bbox"]
                 page_block_list.append(bbox)
-            elif block["type"] in [BlockType.IMAGE, BlockType.CHART, BlockType.CODE, BlockType.TABLE]:
+            elif block["type"] in [
+                BlockType.IMAGE,
+                BlockType.CHART,
+                BlockType.CODE,
+                BlockType.TABLE,
+            ]:
                 for sub_block in block["blocks"]:
                     if sub_block.get(SplitFlag.CROSS_PAGE, False):
                         continue
@@ -260,22 +277,40 @@ def draw_layout_bbox(pdf_info, pdf_bytes, out_path, filename):
         c = canvas.Canvas(packet, pagesize=custom_page_size)
 
         c = draw_bbox_without_number(i, codes_body_list, page, c, [102, 0, 204], True)
-        c = draw_bbox_without_number(i, codes_caption_list, page, c, [204, 153, 255], True)
-        c = draw_bbox_without_number(i, codes_footnote_list, page, c, [229, 204, 255], True)
-        c = draw_bbox_without_number(i, dropped_bbox_list, page, c, [158, 158, 158], True)
+        c = draw_bbox_without_number(
+            i, codes_caption_list, page, c, [204, 153, 255], True
+        )
+        c = draw_bbox_without_number(
+            i, codes_footnote_list, page, c, [229, 204, 255], True
+        )
+        c = draw_bbox_without_number(
+            i, dropped_bbox_list, page, c, [158, 158, 158], True
+        )
         c = draw_bbox_without_number(i, tables_body_list, page, c, [204, 204, 0], True)
-        c = draw_bbox_without_number(i, tables_caption_list, page, c, [255, 255, 102], True)
-        c = draw_bbox_without_number(i, tables_footnote_list, page, c, [229, 255, 204], True)
+        c = draw_bbox_without_number(
+            i, tables_caption_list, page, c, [255, 255, 102], True
+        )
+        c = draw_bbox_without_number(
+            i, tables_footnote_list, page, c, [229, 255, 204], True
+        )
         c = draw_bbox_without_number(i, imgs_body_list, page, c, [153, 255, 51], True)
-        c = draw_bbox_without_number(i, imgs_caption_list, page, c, [102, 178, 255], True)
-        c = draw_bbox_without_number(i, imgs_footnote_list, page, c, [255, 178, 102], True)
+        c = draw_bbox_without_number(
+            i, imgs_caption_list, page, c, [102, 178, 255], True
+        )
+        c = draw_bbox_without_number(
+            i, imgs_footnote_list, page, c, [255, 178, 102], True
+        )
         c = draw_bbox_without_number(i, titles_list, page, c, [102, 102, 255], True)
         c = draw_bbox_without_number(i, texts_list, page, c, [153, 0, 76], True)
-        c = draw_bbox_without_number(i, interline_equations_list, page, c, [0, 255, 0], True)
+        c = draw_bbox_without_number(
+            i, interline_equations_list, page, c, [0, 255, 0], True
+        )
         c = draw_bbox_without_number(i, lists_list, page, c, [40, 169, 92], True)
         c = draw_bbox_without_number(i, list_items_list, page, c, [40, 169, 92], False)
         c = draw_bbox_without_number(i, indexs_list, page, c, [40, 169, 92], True)
-        c = draw_bbox_with_number(i, layout_bbox_list, page, c, [255, 0, 0], False, draw_bbox=False)
+        c = draw_bbox_with_number(
+            i, layout_bbox_list, page, c, [255, 0, 0], False, draw_bbox=False
+        )
 
         c.save()
         packet.seek(0)
@@ -308,16 +343,16 @@ def draw_span_bbox(pdf_info, pdf_bytes, out_path, filename):
     dropped_list = []
 
     def get_span_info(span):
-        if span['type'] == ContentType.TEXT:
-            page_text_list.append(span['bbox'])
-        elif span['type'] == ContentType.INLINE_EQUATION:
-            page_inline_equation_list.append(span['bbox'])
-        elif span['type'] == ContentType.INTERLINE_EQUATION:
-            page_interline_equation_list.append(span['bbox'])
-        elif span['type'] in [ContentType.IMAGE, ContentType.CHART, ContentType.SEAL]:
-            page_image_list.append(span['bbox'])
-        elif span['type'] == ContentType.TABLE:
-            page_table_list.append(span['bbox'])
+        if span["type"] == ContentType.TEXT:
+            page_text_list.append(span["bbox"])
+        elif span["type"] == ContentType.INLINE_EQUATION:
+            page_inline_equation_list.append(span["bbox"])
+        elif span["type"] == ContentType.INTERLINE_EQUATION:
+            page_interline_equation_list.append(span["bbox"])
+        elif span["type"] in [ContentType.IMAGE, ContentType.CHART, ContentType.SEAL]:
+            page_image_list.append(span["bbox"])
+        elif span["type"] == ContentType.TABLE:
+            page_table_list.append(span["bbox"])
 
     for page in pdf_info:
         page_text_list = []
@@ -327,17 +362,16 @@ def draw_span_bbox(pdf_info, pdf_bytes, out_path, filename):
         page_table_list = []
         page_dropped_list = []
 
-
         # 构造dropped_list
-        for block in page['discarded_blocks']:
-            for line in block['lines']:
-                for span in line['spans']:
-                    page_dropped_list.append(span['bbox'])
+        for block in page["discarded_blocks"]:
+            for line in block["lines"]:
+                for span in line["spans"]:
+                    page_dropped_list.append(span["bbox"])
         dropped_list.append(page_dropped_list)
         # 构造其余useful_list
         # for block in page['para_blocks']:  # span直接用分段合并前的结果就可以
-        for block in page['preproc_blocks']:
-            if block['type'] in [
+        for block in page["preproc_blocks"]:
+            if block["type"] in [
                 BlockType.TEXT,
                 BlockType.TITLE,
                 BlockType.INTERLINE_EQUATION,
@@ -347,13 +381,18 @@ def draw_span_bbox(pdf_info, pdf_bytes, out_path, filename):
                 BlockType.ABSTRACT,
                 BlockType.SEAL,
             ]:
-                for line in block['lines']:
-                    for span in line['spans']:
+                for line in block["lines"]:
+                    for span in line["spans"]:
                         get_span_info(span)
-            elif block['type'] in [BlockType.IMAGE, BlockType.TABLE, BlockType.CHART, BlockType.CODE]:
-                for sub_block in block['blocks']:
-                    for line in sub_block['lines']:
-                        for span in line['spans']:
+            elif block["type"] in [
+                BlockType.IMAGE,
+                BlockType.TABLE,
+                BlockType.CHART,
+                BlockType.CODE,
+            ]:
+                for sub_block in block["blocks"]:
+                    for line in sub_block["lines"]:
+                        for span in line["spans"]:
                             get_span_info(span)
         text_list.append(page_text_list)
         inline_equation_list.append(page_inline_equation_list)
@@ -375,9 +414,11 @@ def draw_span_bbox(pdf_info, pdf_bytes, out_path, filename):
         c = canvas.Canvas(packet, pagesize=custom_page_size)
 
         # 获取当前页面的数据
-        draw_bbox_without_number(i, text_list, page, c,[255, 0, 0], False)
+        draw_bbox_without_number(i, text_list, page, c, [255, 0, 0], False)
         draw_bbox_without_number(i, inline_equation_list, page, c, [0, 255, 0], False)
-        draw_bbox_without_number(i, interline_equation_list, page, c, [0, 0, 255], False)
+        draw_bbox_without_number(
+            i, interline_equation_list, page, c, [0, 0, 255], False
+        )
         draw_bbox_without_number(i, image_list, page, c, [255, 204, 0], False)
         draw_bbox_without_number(i, table_list, page, c, [204, 0, 255], False)
         draw_bbox_without_number(i, dropped_list, page, c, [158, 158, 158], False)

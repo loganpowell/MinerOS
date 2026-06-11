@@ -1,5 +1,5 @@
 from io import BytesIO
-from typing import Final, BinaryIO, Optional
+from typing import BinaryIO, Optional
 
 from lxml import etree
 from pptx import Presentation, presentation
@@ -202,7 +202,7 @@ class PptxConverter:
     def _handle_text_elements(self, shape):
         is_list_group_created = False
         enum_list_item_value = 0
-        new_list = None
+        _new_list = None
 
         # 遍历段落以构建文本
         for paragraph in shape.text_frame.paragraphs:
@@ -248,7 +248,7 @@ class PptxConverter:
             else:  # 段落不是列表项
                 if is_list_group_created:
                     is_list_group_created = False
-                    new_list = None
+                    _new_list = None
                     enum_list_item_value = 0
                     self.list_block_stack.pop()
                 # 根据文本类型分配标签(标题/部分标题/段落等)

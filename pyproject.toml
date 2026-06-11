@@ -62,6 +62,11 @@ test = [
     "coverage",
     "fuzzywuzzy"
 ]
+dev = [
+    "mineros[test]",
+    "ruff",
+    "pylint",
+]
 vlm = [
     "torch>=2.6.0,<3",
     "transformers>=4.57.3,<5.0.0",
@@ -134,6 +139,19 @@ namespaces = false
 [tool.setuptools]
 include-package-data = true
 zip-safe = false
+
+[tool.ruff]
+line-length = 120
+exclude = [
+    "mineros/model/utils/pytorchocr",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = [
+    "E402",   # module-level import not at top (intentional in gradio_app.py)
+    "E501",   # line too long (handled by formatter)
+]
 
 [tool.pytest.ini_options]
 addopts = "-s --cov=mineros --cov-report html"

@@ -1,7 +1,6 @@
 import re
 from typing import Literal
 
-from loguru import logger
 
 from mineros.utils.enum_class import ContentType, BlockType
 from mineros.utils.magic_model_utils import tie_up_category_by_index
@@ -83,26 +82,23 @@ class MagicModel:
 
             # 处理span类型并添加到all_spans
             if isinstance(span, dict):
-                line = {
-                    "spans": [span]
-                }
+                line = {"spans": [span]}
             elif isinstance(span, list):
-                line = {
-                    "spans":span
-                }
+                line = {"spans": span}
             else:
                 raise ValueError(f"Unsupported span type: {type(span)}")
 
             block = {
-                    "type": block_type,
-                    "lines": [line],
-                    "index": index,
+                "type": block_type,
+                "lines": [line],
+                "index": index,
             }
             anchor = block_info.get("anchor")
             if (
                 isinstance(anchor, str)
                 and anchor.strip()
-                and block_type in [BlockType.TITLE, BlockType.TEXT, BlockType.INTERLINE_EQUATION]
+                and block_type
+                in [BlockType.TITLE, BlockType.TEXT, BlockType.INTERLINE_EQUATION]
             ):
                 block["anchor"] = anchor.strip()
             if block_type == BlockType.TITLE:
@@ -120,9 +116,17 @@ class MagicModel:
         self.list_blocks = []
         self.index_blocks = []
         for block in blocks:
-            if block["type"] in [BlockType.IMAGE_BODY, BlockType.IMAGE_CAPTION, BlockType.IMAGE_FOOTNOTE]:
+            if block["type"] in [
+                BlockType.IMAGE_BODY,
+                BlockType.IMAGE_CAPTION,
+                BlockType.IMAGE_FOOTNOTE,
+            ]:
                 self.image_blocks.append(block)
-            elif block["type"] in [BlockType.TABLE_BODY, BlockType.TABLE_CAPTION, BlockType.TABLE_FOOTNOTE]:
+            elif block["type"] in [
+                BlockType.TABLE_BODY,
+                BlockType.TABLE_CAPTION,
+                BlockType.TABLE_FOOTNOTE,
+            ]:
                 self.table_blocks.append(block)
             elif block["type"] in [BlockType.CHART_BODY, BlockType.CHART_CAPTION]:
                 self.chart_blocks.append(block)
@@ -136,7 +140,13 @@ class MagicModel:
                 self.ref_text_blocks.append(block)
             elif block["type"] in [BlockType.PHONETIC]:
                 self.phonetic_blocks.append(block)
-            elif block["type"] in [BlockType.HEADER, BlockType.FOOTER, BlockType.PAGE_NUMBER, BlockType.ASIDE_TEXT, BlockType.PAGE_FOOTNOTE]:
+            elif block["type"] in [
+                BlockType.HEADER,
+                BlockType.FOOTER,
+                BlockType.PAGE_NUMBER,
+                BlockType.ASIDE_TEXT,
+                BlockType.PAGE_FOOTNOTE,
+            ]:
                 self.discarded_blocks.append(block)
             elif block["type"] == BlockType.LIST:
                 self.list_blocks.append(block)
@@ -145,14 +155,23 @@ class MagicModel:
             else:
                 continue
 
-        self.image_blocks, not_include_image_blocks = fix_two_layer_blocks(self.image_blocks, BlockType.IMAGE)
-        self.table_blocks, not_include_table_blocks = fix_two_layer_blocks(self.table_blocks, BlockType.TABLE)
-        self.chart_blocks, not_include_chart_blocks = fix_two_layer_blocks(self.chart_blocks, BlockType.CHART)
+        self.image_blocks, not_include_image_blocks = fix_two_layer_blocks(
+            self.image_blocks, BlockType.IMAGE
+        )
+        self.table_blocks, not_include_table_blocks = fix_two_layer_blocks(
+            self.table_blocks, BlockType.TABLE
+        )
+        self.chart_blocks, not_include_chart_blocks = fix_two_layer_blocks(
+            self.chart_blocks, BlockType.CHART
+        )
 
-        for block in not_include_image_blocks + not_include_table_blocks + not_include_chart_blocks:
+        for block in (
+            not_include_image_blocks
+            + not_include_table_blocks
+            + not_include_chart_blocks
+        ):
             block["type"] = BlockType.TEXT
             self.text_blocks.append(block)
-
 
     def get_list_blocks(self):
         return self.list_blocks
@@ -212,9 +231,9 @@ def parse_text_block_spans(content: str) -> list:
 
     while pos < len(content):
         # 查找行内公式标签 <eq>...</eq>
-        eq_start = content.find('<eq>', pos)
+        eq_start = content.find("<eq>", pos)
         # 查找超链接标签 <hyperlink>
-        hyperlink_start = content.find('<hyperlink>', pos)
+        hyperlink_start = content.find("<hyperlink>", pos)
         # 查找带样式的文本标签 <text ...>（顶层，不在 hyperlink 内部）
         text_tag_match = _text_tag_re.search(content, pos)
         text_tag_start = text_tag_match.start() if text_tag_match else -1
@@ -222,20 +241,17 @@ def parse_text_block_spans(content: str) -> list:
         # 收集所有有效的标签位置
         candidates = []
         if eq_start != -1:
-            candidates.append((eq_start, 'eq'))
+            candidates.append((eq_start, "eq"))
         if hyperlink_start != -1:
-            candidates.append((hyperlink_start, 'hyperlink'))
+            candidates.append((hyperlink_start, "hyperlink"))
         if text_tag_start != -1:
-            candidates.append((text_tag_start, 'text'))
+            candidates.append((text_tag_start, "text"))
 
         # 没有找到任何标签，处理剩余文本
         if not candidates:
             remaining_text = content[last_end:]
             if remaining_text:
-                spans.append({
-                    "type": ContentType.TEXT,
-                    "content": remaining_text
-                })
+                spans.append({"type": ContentType.TEXT, "content": remaining_text})
             break
 
         # 取位置最小的标签
@@ -245,98 +261,94 @@ def parse_text_block_spans(content: str) -> list:
         if next_tag_pos > last_end:
             text_before = content[last_end:next_tag_pos]
             if text_before:
-                spans.append({
-                    "type": ContentType.TEXT,
-                    "content": text_before
-                })
+                spans.append({"type": ContentType.TEXT, "content": text_before})
 
         # 处理行内公式
-        if next_tag_type == 'eq':
-            eq_end = content.find('</eq>', next_tag_pos)
+        if next_tag_type == "eq":
+            eq_end = content.find("</eq>", next_tag_pos)
             if eq_end != -1:
-                formula_content = content[next_tag_pos + 4:eq_end]
-                spans.append({
-                    "type": ContentType.INLINE_EQUATION,
-                    "content": formula_content
-                })
+                formula_content = content[next_tag_pos + 4 : eq_end]
+                spans.append(
+                    {"type": ContentType.INLINE_EQUATION, "content": formula_content}
+                )
                 pos = eq_end + 5  # 跳过</eq>
                 last_end = pos
             else:
                 # 未找到闭合标签，将<eq>作为普通文本处理
-                spans.append({
-                    "type": ContentType.TEXT,
-                    "content": content[last_end:]
-                })
+                spans.append({"type": ContentType.TEXT, "content": content[last_end:]})
                 break
 
         # 处理带样式的文本标签
-        elif next_tag_type == 'text':
-            text_end = content.find('</text>', next_tag_pos)
+        elif next_tag_type == "text":
+            text_end = content.find("</text>", next_tag_pos)
             if text_end != -1:
                 # text_tag_match 对应当前 next_tag_pos 的匹配
                 # 重新匹配确保位置对齐
-                tag_open_end = content.find('>', next_tag_pos) + 1
+                tag_open_end = content.find(">", next_tag_pos) + 1
                 text_content = content[tag_open_end:text_end]
-                style_str = text_tag_match.group(1) if text_tag_match and text_tag_match.start() == next_tag_pos else None
-                span = {
-                    "type": ContentType.TEXT,
-                    "content": text_content
-                }
+                style_str = (
+                    text_tag_match.group(1)
+                    if text_tag_match and text_tag_match.start() == next_tag_pos
+                    else None
+                )
+                span = {"type": ContentType.TEXT, "content": text_content}
                 if style_str:
-                    span["style"] = [s.strip() for s in style_str.split(',') if s.strip()]
+                    span["style"] = [
+                        s.strip() for s in style_str.split(",") if s.strip()
+                    ]
                 spans.append(span)
                 pos = text_end + 7  # 跳过 </text>
                 last_end = pos
             else:
                 # 未找到闭合标签，作为普通文本处理
-                spans.append({
-                    "type": ContentType.TEXT,
-                    "content": content[last_end:]
-                })
+                spans.append({"type": ContentType.TEXT, "content": content[last_end:]})
                 break
 
         # 处理超链接
-        elif next_tag_type == 'hyperlink':
-            hyperlink_end = content.find('</hyperlink>', next_tag_pos)
+        elif next_tag_type == "hyperlink":
+            hyperlink_end = content.find("</hyperlink>", next_tag_pos)
             if hyperlink_end != -1:
                 # 提取超链接内容
-                hyperlink_content = content[next_tag_pos + 11:hyperlink_end]
+                hyperlink_content = content[next_tag_pos + 11 : hyperlink_end]
 
                 # 解析内部的 <text [style="..."]> 和 <url> 标签
                 inner_text_match = _text_tag_re.search(hyperlink_content)
-                text_end_in_hl = hyperlink_content.find('</text>')
-                url_start = hyperlink_content.find('<url>')
-                url_end = hyperlink_content.find('</url>')
+                text_end_in_hl = hyperlink_content.find("</text>")
+                url_start = hyperlink_content.find("<url>")
+                url_end = hyperlink_content.find("</url>")
 
-                if inner_text_match and text_end_in_hl != -1 and url_start != -1 and url_end != -1:
+                if (
+                    inner_text_match
+                    and text_end_in_hl != -1
+                    and url_start != -1
+                    and url_end != -1
+                ):
                     style_str = inner_text_match.group(1)
                     link_text_start = inner_text_match.end()  # 开始标签结束后的位置
                     link_text = hyperlink_content[link_text_start:text_end_in_hl]
-                    link_url = hyperlink_content[url_start + 5:url_end]
+                    link_url = hyperlink_content[url_start + 5 : url_end]
 
                     span = {
                         "type": ContentType.HYPERLINK,
                         "content": link_text,
-                        "url": link_url
+                        "url": link_url,
                     }
                     if style_str:
-                        span["style"] = [s.strip() for s in style_str.split(',') if s.strip()]
+                        span["style"] = [
+                            s.strip() for s in style_str.split(",") if s.strip()
+                        ]
                     spans.append(span)
                     pos = hyperlink_end + 12  # 跳过</hyperlink>
                     last_end = pos
                 else:
                     # 超链接格式不正确，作为普通文本处理
-                    spans.append({
-                        "type": ContentType.TEXT,
-                        "content": content[last_end:]
-                    })
+                    spans.append(
+                        {"type": ContentType.TEXT, "content": content[last_end:]}
+                    )
                     break
             else:
                 # 未找到闭合标签，将<hyperlink>作为普通文本处理
-                spans.append({
-                    "type": ContentType.TEXT,
-                    "content": content[last_end:]
-                })
+                spans.append({"type": ContentType.TEXT, "content": content[last_end:]})
                 break
 
     return spans
@@ -365,10 +377,7 @@ def parse_list_block(list_block: dict):
             # 解析文本项（可能包含行内公式和超链接）
             text_content = item.get("content", "")
             spans = parse_text_block_spans(text_content)
-            text_block = {
-                "type": BlockType.TEXT,
-                "lines": [{"spans": spans}]
-            }
+            text_block = {"type": BlockType.TEXT, "lines": [{"spans": spans}]}
             blocks.append(text_block)
 
         elif item_type == "list":
@@ -382,7 +391,7 @@ def parse_list_block(list_block: dict):
         "type": BlockType.LIST,
         "attribute": list_block.get("attribute", "unordered"),
         "ilevel": list_block.get("ilevel", 0),
-        "blocks": blocks
+        "blocks": blocks,
     }
 
     return result
@@ -410,10 +419,7 @@ def parse_index_block(index_block: dict):
         if item_type == "text":
             text_content = item.get("content", "")
             spans = parse_text_block_spans(text_content)
-            text_block = {
-                "type": BlockType.TEXT,
-                "lines": [{"spans": spans}]
-            }
+            text_block = {"type": BlockType.TEXT, "lines": [{"spans": spans}]}
             anchor = item.get("anchor")
             if isinstance(anchor, str) and anchor.strip():
                 text_block["anchor"] = anchor.strip()
@@ -427,7 +433,7 @@ def parse_index_block(index_block: dict):
     result = {
         "type": BlockType.INDEX,
         "ilevel": index_block.get("ilevel", 0),
-        "blocks": blocks
+        "blocks": blocks,
     }
 
     return result
@@ -457,9 +463,9 @@ def clean_table_html(html: str) -> str:
         return ""
 
     # 需要保留的属性（对表格结构有用）
-    preserved_attrs = {'colspan', 'rowspan'}
+    preserved_attrs = {"colspan", "rowspan"}
     # img 标签需要额外保留的属性（内联 base64 图片内容）
-    img_preserved_attrs = {'src', 'alt', 'width', 'height'}
+    img_preserved_attrs = {"src", "alt", "width", "height"}
 
     def clean_tag(match):
         """清洗单个标签，只保留结构相关的属性"""
@@ -467,10 +473,12 @@ def clean_table_html(html: str) -> str:
         tag_name = match.group(1).lower()
 
         # 自闭合标签的处理
-        is_self_closing = full_tag.rstrip().endswith('/>')
+        is_self_closing = full_tag.rstrip().endswith("/>")
 
         # img 标签额外保留图片相关属性（如内联 base64 src）
-        current_preserved = preserved_attrs | (img_preserved_attrs if tag_name == 'img' else set())
+        current_preserved = preserved_attrs | (
+            img_preserved_attrs if tag_name == "img" else set()
+        )
 
         # 提取需要保留的属性
         kept_attrs = []
@@ -486,7 +494,9 @@ def clean_table_html(html: str) -> str:
             if attr_name is None:
                 continue
             attr_name = attr_name.lower()
-            attr_value = attr_match.group(2) or attr_match.group(3) or attr_match.group(4) or ""
+            attr_value = (
+                attr_match.group(2) or attr_match.group(3) or attr_match.group(4) or ""
+            )
 
             # 只保留指定属性（表格结构属性，img 标签还额外保留图片内容属性）
             if attr_name in current_preserved:
@@ -494,18 +504,18 @@ def clean_table_html(html: str) -> str:
 
         # 重建标签
         if kept_attrs:
-            attrs_str = ' ' + ' '.join(kept_attrs)
+            attrs_str = " " + " ".join(kept_attrs)
         else:
-            attrs_str = ''
+            attrs_str = ""
 
         if is_self_closing:
-            return f'<{tag_name}{attrs_str}/>'
+            return f"<{tag_name}{attrs_str}/>"
         else:
-            return f'<{tag_name}{attrs_str}>'
+            return f"<{tag_name}{attrs_str}>"
 
     # 匹配开始标签（包括自闭合标签），捕获标签名
     # 匹配 <tagname ...> 或 <tagname .../>
-    tag_pattern = r'<(\w+)(?:\s+[^>]*)?\s*/?>'
+    tag_pattern = r"<(\w+)(?:\s+[^>]*)?\s*/?>"
 
     result = re.sub(tag_pattern, clean_tag, html)
 
@@ -514,8 +524,10 @@ def clean_table_html(html: str) -> str:
 
 def isolated_formula_clean(txt):
     latex = txt[:]
-    if latex.startswith("\\["): latex = latex[2:]
-    if latex.endswith("\\]"): latex = latex[:-2]
+    if latex.startswith("\\["):
+        latex = latex[2:]
+    if latex.endswith("\\]"):
+        latex = latex[:-2]
     latex = latex.strip()
     return latex
 
@@ -545,6 +557,7 @@ def code_content_clean(content):
 
 def __tie_up_category_by_index(blocks, subject_block_type, object_block_type):
     """基于index的主客体关联包装函数"""
+
     # 定义获取主体和客体对象的函数
     def get_subjects():
         return list(
@@ -577,7 +590,9 @@ def __tie_up_category_by_index(blocks, subject_block_type, object_block_type):
 
 
 def get_type_blocks(blocks, block_type: Literal["image", "table", "chart"]):
-    with_captions = __tie_up_category_by_index(blocks, f"{block_type}_body", f"{block_type}_caption")
+    with_captions = __tie_up_category_by_index(
+        blocks, f"{block_type}_body", f"{block_type}_caption"
+    )
     ret = []
     for v in with_captions:
         record = {
@@ -702,19 +717,28 @@ def classify_caption_blocks(page_blocks: list) -> list:
 
                     # 根据当前块类型检查是否匹配caption前缀
                     if block_type == "table":
-                        if any(content.startswith(prefix.lower()) for prefix in table_caption_prefixes):
+                        if any(
+                            content.startswith(prefix.lower())
+                            for prefix in table_caption_prefixes
+                        ):
                             # 将text块标记为caption，后续会被处理为table_caption
                             next_block = next_block.copy()
                             next_block["type"] = "caption"
                             page_blocks[i + 1] = next_block
                     elif block_type == "image":
-                        if any(content.startswith(prefix.lower()) for prefix in image_caption_prefixes):
+                        if any(
+                            content.startswith(prefix.lower())
+                            for prefix in image_caption_prefixes
+                        ):
                             # 将text块标记为caption，后续会被处理为image_caption
                             next_block = next_block.copy()
                             next_block["type"] = "caption"
                             page_blocks[i + 1] = next_block
                     elif block_type == "chart":
-                        if any(content.startswith(prefix.lower()) for prefix in chart_caption_prefixes):
+                        if any(
+                            content.startswith(prefix.lower())
+                            for prefix in chart_caption_prefixes
+                        ):
                             # 将text块标记为caption，后续会被处理为chart_caption
                             next_block = next_block.copy()
                             next_block["type"] = "caption"

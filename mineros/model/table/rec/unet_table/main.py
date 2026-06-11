@@ -18,7 +18,7 @@ from .table_structure_unet import TSRUnet
 from mineros.utils.enum_class import ModelPath
 from mineros.utils.models_download_utils import auto_download_and_get_model_root_path
 from .table_recover import TableRecover
-from .utils import InputType, LoadImage, VisTable
+from .utils import InputType, LoadImage
 from .utils_table_recover import (
     match_ocr_cell,
     plot_html_table,

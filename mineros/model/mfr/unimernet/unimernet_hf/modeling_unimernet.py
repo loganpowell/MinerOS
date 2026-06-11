@@ -4,7 +4,6 @@ from typing import Optional
 
 import torch
 from ftfy import fix_text
-from loguru import logger
 
 from transformers import AutoConfig, AutoModel, AutoModelForCausalLM, AutoTokenizer, PretrainedConfig, PreTrainedModel
 from transformers import VisionEncoderDecoderConfig, VisionEncoderDecoderModel
@@ -78,7 +77,7 @@ class UnimernetModel(VisionEncoderDecoderModel):
         self.transform = UnimerSwinImageProcessor()
         self.tokenizer = TokenizerWrapper(AutoTokenizer.from_pretrained(model_path))
         self._post_check()
-    
+
     def _post_check(self):
         tokenizer = self.tokenizer
 
@@ -148,7 +147,7 @@ class UnimernetModel(VisionEncoderDecoderModel):
         num_channels = pixel_values.shape[1]
         if num_channels == 1:
             pixel_values = pixel_values.repeat(1, 3, 1, 1)
-        
+
         kwargs = {}
         if do_sample:
             kwargs["temperature"] = temperature

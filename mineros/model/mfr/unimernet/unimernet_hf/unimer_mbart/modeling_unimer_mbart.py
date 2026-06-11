@@ -204,7 +204,7 @@ class UnimerMBartAttention(nn.Module):
                 f"embed_dim must be divisible by num_heads (got `embed_dim`: {self.embed_dim}"
                 f" and `num_heads`: {num_heads})."
             )
-        
+
         self.squeeze_dim = embed_dim // config.qk_squeeze
         self.squeeze_head_dim = self.squeeze_dim // num_heads
         self.scaling = self.squeeze_head_dim**-0.5

@@ -161,7 +161,7 @@ def ocr_det(
             resolution_groups[group_key].append(crop_info)
 
         # 对每个分辨率组进行批处理
-        for (target_h, target_w), group_crops in tqdm(resolution_groups.items(), desc=f"OCR-det"):
+        for (target_h, target_w), group_crops in tqdm(resolution_groups.items(), desc="OCR-det"):
             # 对所有图像进行padding到统一尺寸
             batch_images = []
             for crop_info in group_crops:

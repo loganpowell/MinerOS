@@ -209,9 +209,9 @@ def fix_unbalanced_braces(latex_formula):
 def process_latex(input_string):
     """
         处理LaTeX公式中的反斜杠：
-        1. 如果\后跟特殊字符(#$%&~_^\\{})或空格，保持不变
-        2. 如果\后跟两个小写字母，保持不变
-        3. 其他情况，在\后添加空格
+        1. 如果\\后跟特殊字符(#$%&~_^\\{})或空格，保持不变
+        2. 如果\\后跟两个小写字母，保持不变
+        3. 其他情况，在\\后添加空格
 
         Args:
             input_string (str): 输入的LaTeX公式

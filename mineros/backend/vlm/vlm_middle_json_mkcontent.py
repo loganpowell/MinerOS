@@ -1,6 +1,6 @@
 import os
 import re
-from html import escape, unescape
+from html import unescape
 
 from loguru import logger
 

@@ -699,7 +699,7 @@ class UnimerSwinLayer(nn.Module):
             pass
         height, width = input_dimensions
         batch_size, _, channels = hidden_states.size()
-        
+
 
 
         hidden_states = self.ce[0](hidden_states, input_dimensions)

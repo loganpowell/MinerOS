@@ -7,7 +7,6 @@ import re
 from PIL import Image, ImageOps
 from typing import List, Optional, Tuple, Union, Dict, Any
 
-from loguru import logger
 from tokenizers import AddedToken
 from tokenizers import Tokenizer as TokenizerFast
 

@@ -129,7 +129,7 @@ def temporary_model_source(model_source):
     "model_source",
     type=click.Choice(REMOTE_MODEL_SOURCES),
     help="""
-        The source of the model repository. 
+        The source of the model repository.
         """,
     default=None,
 )

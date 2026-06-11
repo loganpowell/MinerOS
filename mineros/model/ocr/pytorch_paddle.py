@@ -26,128 +26,127 @@ from mineros.model.utils.tools.infer.predict_system import TextSystem
 from mineros.model.utils.tools.infer import pytorchocr_utility as utility
 import argparse
 
-
 latin_lang = [
-        "af",
-        "az",
-        "bs",
-        "cs",
-        "cy",
-        "da",
-        "de",
-        "es",
-        "et",
-        "fr",
-        "ga",
-        "hr",
-        "hu",
-        "id",
-        "is",
-        "it",
-        "ku",
-        "la",
-        "lt",
-        "lv",
-        "mi",
-        "ms",
-        "mt",
-        "nl",
-        "no",
-        "oc",
-        "pi",
-        "pl",
-        "pt",
-        "ro",
-        "rs_latin",
-        "sk",
-        "sl",
-        "sq",
-        "sv",
-        "sw",
-        "tl",
-        "tr",
-        "uz",
-        "vi",
-        "french",
-        "german",
-        "fi",
-        "eu",
-        "gl",
-        "lb",
-        "rm",
-        "ca",
-        "qu",
+    "af",
+    "az",
+    "bs",
+    "cs",
+    "cy",
+    "da",
+    "de",
+    "es",
+    "et",
+    "fr",
+    "ga",
+    "hr",
+    "hu",
+    "id",
+    "is",
+    "it",
+    "ku",
+    "la",
+    "lt",
+    "lv",
+    "mi",
+    "ms",
+    "mt",
+    "nl",
+    "no",
+    "oc",
+    "pi",
+    "pl",
+    "pt",
+    "ro",
+    "rs_latin",
+    "sk",
+    "sl",
+    "sq",
+    "sv",
+    "sw",
+    "tl",
+    "tr",
+    "uz",
+    "vi",
+    "french",
+    "german",
+    "fi",
+    "eu",
+    "gl",
+    "lb",
+    "rm",
+    "ca",
+    "qu",
 ]
 arabic_lang = ["ar", "fa", "ug", "ur", "ps", "ku", "sd", "bal"]
 cyrillic_lang = [
-        "ru",
-        "rs_cyrillic",
-        "be",
-        "bg",
-        "uk",
-        "mn",
-        "abq",
-        "ady",
-        "kbd",
-        "ava",
-        "dar",
-        "inh",
-        "che",
-        "lbe",
-        "lez",
-        "tab",
-        "kk",
-        "ky",
-        "tg",
-        "mk",
-        "tt",
-        "cv",
-        "ba",
-        "mhr",
-        "mo",
-        "udm",
-        "kv",
-        "os",
-        "bua",
-        "xal",
-        "tyv",
-        "sah",
-        "kaa",
+    "ru",
+    "rs_cyrillic",
+    "be",
+    "bg",
+    "uk",
+    "mn",
+    "abq",
+    "ady",
+    "kbd",
+    "ava",
+    "dar",
+    "inh",
+    "che",
+    "lbe",
+    "lez",
+    "tab",
+    "kk",
+    "ky",
+    "tg",
+    "mk",
+    "tt",
+    "cv",
+    "ba",
+    "mhr",
+    "mo",
+    "udm",
+    "kv",
+    "os",
+    "bua",
+    "xal",
+    "tyv",
+    "sah",
+    "kaa",
 ]
 east_slavic_lang = ["ru", "be", "uk"]
 devanagari_lang = [
-        "hi",
-        "mr",
-        "ne",
-        "bh",
-        "mai",
-        "ang",
-        "bho",
-        "mah",
-        "sck",
-        "new",
-        "gom",
-        "sa",
-        "bgc",
+    "hi",
+    "mr",
+    "ne",
+    "bh",
+    "mai",
+    "ang",
+    "bho",
+    "mah",
+    "sck",
+    "new",
+    "gom",
+    "sa",
+    "bgc",
 ]
 
 
 def get_model_params(lang, config):
-    if lang in config['lang']:
-        params = config['lang'][lang]
-        det = params.get('det')
-        rec = params.get('rec')
-        dict_file = params.get('dict')
+    if lang in config["lang"]:
+        params = config["lang"][lang]
+        det = params.get("det")
+        rec = params.get("rec")
+        dict_file = params.get("dict")
         return det, rec, dict_file
     else:
-        raise Exception (f'Language {lang} not supported')
+        raise Exception(f"Language {lang} not supported")
 
 
-root_dir = os.path.join(Path(__file__).resolve().parent.parent, 'utils')
+root_dir = os.path.join(Path(__file__).resolve().parent.parent, "utils")
 DEFAULT_SEAL_DEBUG_DIR = os.path.join(
     Path(__file__).resolve().parents[3],
-    'output_images',
-    'seal_ocr_debug',
+    "output_images",
+    "seal_ocr_debug",
 )
 
 
@@ -156,59 +155,67 @@ class PytorchPaddleOCR(TextSystem):
         parser = utility.init_args()
         args = parser.parse_args(args)
 
-        self.lang = kwargs.get('lang', 'ch')
-        self.is_seal = self.lang in ['seal', 'seal_lite']
+        self.lang = kwargs.get("lang", "ch")
+        self.is_seal = self.lang in ["seal", "seal_lite"]
         self.enable_merge_det_boxes = kwargs.get("enable_merge_det_boxes", True)
 
         device = get_device()
-        if device == 'cpu':
-            if self.lang in ['ch', 'ch_server', 'japan', 'chinese_cht']:
+        if device == "cpu":
+            if self.lang in ["ch", "ch_server", "japan", "chinese_cht"]:
                 # logger.warning("The current device in use is CPU. To ensure the speed of parsing, the language is automatically switched to ch_lite.")
-                self.lang = 'ch_lite'
-            elif self.lang in ['seal']:
-                self.lang = 'seal_lite'
+                self.lang = "ch_lite"
+            elif self.lang in ["seal"]:
+                self.lang = "seal_lite"
 
         if self.lang in latin_lang:
-            self.lang = 'latin'
+            self.lang = "latin"
         elif self.lang in east_slavic_lang:
-            self.lang = 'east_slavic'
+            self.lang = "east_slavic"
         elif self.lang in arabic_lang:
-            self.lang = 'arabic'
+            self.lang = "arabic"
         elif self.lang in cyrillic_lang:
-            self.lang = 'cyrillic'
+            self.lang = "cyrillic"
         elif self.lang in devanagari_lang:
-            self.lang = 'devanagari'
+            self.lang = "devanagari"
         else:
             pass
 
-        models_config_path = os.path.join(root_dir, 'pytorchocr', 'utils', 'resources', 'models_config.yml')
+        models_config_path = os.path.join(
+            root_dir, "pytorchocr", "utils", "resources", "models_config.yml"
+        )
         with open(models_config_path) as file:
             config = yaml.safe_load(file)
             det, rec, dict_file = get_model_params(self.lang, config)
         ocr_models_dir = ModelPath.pytorch_paddle
 
         det_model_path = f"{ocr_models_dir}/{det}"
-        det_model_path = os.path.join(auto_download_and_get_model_root_path(det_model_path), det_model_path)
+        det_model_path = os.path.join(
+            auto_download_and_get_model_root_path(det_model_path), det_model_path
+        )
         rec_model_path = f"{ocr_models_dir}/{rec}"
-        rec_model_path = os.path.join(auto_download_and_get_model_root_path(rec_model_path), rec_model_path)
-        kwargs['det_model_path'] = det_model_path
-        kwargs['rec_model_path'] = rec_model_path
-        kwargs['rec_char_dict_path'] = os.path.join(root_dir, 'pytorchocr', 'utils', 'resources', 'dict', dict_file)
-        kwargs['rec_batch_num'] = 6
+        rec_model_path = os.path.join(
+            auto_download_and_get_model_root_path(rec_model_path), rec_model_path
+        )
+        kwargs["det_model_path"] = det_model_path
+        kwargs["rec_model_path"] = rec_model_path
+        kwargs["rec_char_dict_path"] = os.path.join(
+            root_dir, "pytorchocr", "utils", "resources", "dict", dict_file
+        )
+        kwargs["rec_batch_num"] = 6
         if self.is_seal:
-            kwargs['det_limit_side_len'] = 736
-            kwargs['det_limit_type'] = 'min'
-            kwargs['det_max_side_limit'] = 4000
-            kwargs['det_db_thresh'] = 0.2
-            kwargs['det_db_box_thresh'] = 0.6
-            kwargs['det_db_unclip_ratio'] = 0.5
-            kwargs['det_box_type'] = 'poly'
-            kwargs['use_dilation'] = False
-            kwargs['enable_merge_det_boxes'] = False
-            kwargs['drop_score'] = 0
+            kwargs["det_limit_side_len"] = 736
+            kwargs["det_limit_type"] = "min"
+            kwargs["det_max_side_limit"] = 4000
+            kwargs["det_db_thresh"] = 0.2
+            kwargs["det_db_box_thresh"] = 0.6
+            kwargs["det_db_unclip_ratio"] = 0.5
+            kwargs["det_box_type"] = "poly"
+            kwargs["use_dilation"] = False
+            kwargs["enable_merge_det_boxes"] = False
+            kwargs["drop_score"] = 0
             self.enable_merge_det_boxes = False
 
-        kwargs['device'] = device
+        kwargs["device"] = device
 
         default_args = vars(args)
         default_args.update(kwargs)
@@ -217,7 +224,7 @@ class PytorchPaddleOCR(TextSystem):
         super().__init__(args)
         if self.is_seal:
             self._seal_sort_boxes = SortPolyBoxes()
-            self._seal_crop_by_polys = CropByPolys(det_box_type='poly')
+            self._seal_crop_by_polys = CropByPolys(det_box_type="poly")
             self._seal_debug_counter = 0
             self._seal_debug_dir = self._resolve_seal_debug_dir()
 
@@ -235,7 +242,9 @@ class PytorchPaddleOCR(TextSystem):
 
         return None
 
-    def _dump_seal_debug_artifacts(self, input_image, dt_boxes, img_crop_list, rec_res=None):
+    def _dump_seal_debug_artifacts(
+        self, input_image, dt_boxes, img_crop_list, rec_res=None
+    ):
         if not self._seal_debug_dir:
             return
 
@@ -251,7 +260,9 @@ class PytorchPaddleOCR(TextSystem):
         det_vis = input_image.copy()
         for index, box in enumerate(dt_boxes or []):
             points = np.asarray(box, dtype=np.int32).reshape((-1, 1, 2))
-            cv2.polylines(det_vis, [points], isClosed=True, color=(0, 0, 255), thickness=2)
+            cv2.polylines(
+                det_vis, [points], isClosed=True, color=(0, 0, 255), thickness=2
+            )
             anchor = tuple(np.asarray(box[0], dtype=np.int32).tolist())
             cv2.putText(
                 det_vis,
@@ -282,17 +293,18 @@ class PytorchPaddleOCR(TextSystem):
         with open(os.path.join(sample_dir, "meta.json"), "w", encoding="utf-8") as f:
             json.dump(records, f, ensure_ascii=False, indent=2)
 
-    def ocr(self,
-            img,
-            det=True,
-            rec=True,
-            mfd_res=None,
-            tqdm_enable=False,
-            tqdm_desc="OCR-rec Predict",
-            ):
+    def ocr(
+        self,
+        img,
+        det=True,
+        rec=True,
+        mfd_res=None,
+        tqdm_enable=False,
+        tqdm_desc="OCR-rec Predict",
+    ):
         assert isinstance(img, (np.ndarray, list, str, bytes))
-        if isinstance(img, list) and det == True:
-            logger.error('When input a list of images, det must be false')
+        if isinstance(img, list) and det:
+            logger.error("When input a list of images, det must be false")
             exit(0)
         img = check_img(img)
         imgs = [img]
@@ -306,7 +318,9 @@ class PytorchPaddleOCR(TextSystem):
                     if not dt_boxes and not rec_res:
                         ocr_res.append(None)
                         continue
-                    tmp_res = [[box.tolist(), res] for box, res in zip(dt_boxes, rec_res)]
+                    tmp_res = [
+                        [box.tolist(), res] for box, res in zip(dt_boxes, rec_res)
+                    ]
                     ocr_res.append(tmp_res)
                 return ocr_res
             elif det and not rec:
@@ -338,7 +352,9 @@ class PytorchPaddleOCR(TextSystem):
                     if not isinstance(img, list):
                         img = preprocess_image(img)
                         img = [img]
-                    rec_res, elapse = self.text_recognizer(img, tqdm_enable=tqdm_enable, tqdm_desc=tqdm_desc)
+                    rec_res, elapse = self.text_recognizer(
+                        img, tqdm_enable=tqdm_enable, tqdm_desc=tqdm_desc
+                    )
                     # logger.debug("rec_res num  : {}, elapsed : {}".format(len(rec_res), elapse))
                     ocr_res.append(rec_res)
                 return ocr_res
@@ -394,7 +410,8 @@ class PytorchPaddleOCR(TextSystem):
 
         return filter_boxes, filter_rec_res
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     pytorch_paddle_ocr = PytorchPaddleOCR()
     img = cv2.imread("/Users/myhloli/Downloads/screenshot-20250326-194348.png")
     dt_boxes, rec_res = pytorch_paddle_ocr(img)

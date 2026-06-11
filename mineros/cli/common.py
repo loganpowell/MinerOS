@@ -717,7 +717,7 @@ def _process_office_doc(
             need_remove_index.append(i)
 
             local_image_dir, local_md_dir = prepare_env(
-                output_dir, pdf_file_name, f"office"
+                output_dir, pdf_file_name, "office"
             )
             image_writer, md_writer = FileBasedDataWriter(
                 local_image_dir

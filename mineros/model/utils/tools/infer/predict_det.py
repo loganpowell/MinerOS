@@ -171,7 +171,7 @@ class TextDetector(BaseOCRV20):
         try:
             batch_tensor = np.stack(batch_data, axis=0)
             batch_shapes = np.stack(batch_shapes, axis=0)
-        except Exception as e:
+        except Exception:
             # 如果堆叠失败，回退到逐个处理
             batch_results = []
             for img in img_list:

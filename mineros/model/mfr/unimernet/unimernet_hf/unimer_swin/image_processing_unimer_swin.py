@@ -15,7 +15,7 @@ class UnimerSwinImageProcessor(BaseImageProcessor):
         ):
         self.input_size = [int(_) for _ in image_size]
         assert len(self.input_size) == 2
-    
+
         self.transform = alb.Compose(
             [
                 alb.ToGray(),
