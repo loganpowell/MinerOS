@@ -23,4 +23,4 @@ RUN python3 -m pip install -U '/build/mineros[core]' --break-system-packages && 
 RUN /bin/bash -c "mineros-models-download -s huggingface -m all"
 
 # Set the entry point to activate the virtual environment and run the command line tool
-ENTRYPOINT ["/bin/bash", "-c", "export MINERU_MODEL_SOURCE=local && exec \"$@\"", "--"]
+ENTRYPOINT ["/bin/bash", "-c", "export MINEROS_MODEL_SOURCE=local && exec \"$@\"", "--"]

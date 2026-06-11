@@ -12,16 +12,16 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install mineru latest
+# Install mineros latest
 RUN python3 -m pip install -U pip -i https://mirrors.aliyun.com/pypi/simple && \
-    python3 -m pip install 'mineru[core]>=3.0.0' \
+    python3 -m pip install 'mineros[core]>=3.0.0' \
                             numpy==1.26.4 \
                             opencv-python==4.11.0.86 \
                             -i https://mirrors.aliyun.com/pypi/simple && \
     python3 -m pip cache purge
 
 # Download models and update the configuration file
-RUN /bin/bash -c "mineru-models-download -s modelscope -m all"
+RUN /bin/bash -c "mineros-models-download -s modelscope -m all"
 
 # Set the entry point to activate the virtual environment and run the command line tool
-ENTRYPOINT ["/bin/bash", "-c", "export MINERU_MODEL_SOURCE=local && exec \"$@\"", "--"]
+ENTRYPOINT ["/bin/bash", "-c", "export MINEROS_MODEL_SOURCE=local && exec \"$@\"", "--"]

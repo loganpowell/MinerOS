@@ -16,13 +16,13 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install mineru latest
+# Install mineros latest
 RUN /bin/bash -c '\
     if [ "$BACKEND" = "vllm" ]; then \
         source /torch/venv3/pytorch_infer/bin/activate; \
     fi && \
     python3 -m pip install -U pip -i https://mirrors.aliyun.com/pypi/simple && \
-    python3 -m pip install "mineru[core]>=3.0.0" \
+    python3 -m pip install "mineros[core]>=3.0.0" \
                             numpy==1.26.4 \
                             opencv-python==4.11.0.86 \
                             -i https://mirrors.aliyun.com/pypi/simple && \
@@ -34,9 +34,9 @@ RUN /bin/bash -c '\
     if [ "$BACKEND" = "vllm" ]; then \
         source /torch/venv3/pytorch_infer/bin/activate; \
     fi && \
-    mineru-models-download -s modelscope -m all'
+    mineros-models-download -s modelscope -m all'
 
 WORKDIR /workspace
 
 # Set the entry point to activate the virtual environment and run the command line tool
-ENTRYPOINT ["/bin/bash", "-c", "export MINERU_MODEL_SOURCE=local && exec \"$@\"", "--"]
+ENTRYPOINT ["/bin/bash", "-c", "export MINEROS_MODEL_SOURCE=local && exec \"$@\"", "--"]
