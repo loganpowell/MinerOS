@@ -97,7 +97,7 @@
 
 > [!TIP]
 > 除以上主流环境与平台外，我们也收录了一些社区用户反馈的其他平台支持情况，详情请参考[其他加速卡适配](https://loganpowell.github.io/MinerOS/zh/usage/)。  
-> 如果您有意将自己的环境适配经验分享给社区，欢迎通过提交或提交PR至[其他加速卡适配](https://github.com/loganpowell/MinerU/tree/master/docs/zh/usage/acceleration_cards)文档。
+> 如果您有意将自己的环境适配经验分享给社区，欢迎通过提交或提交PR至[其他加速卡适配](https://github.com/loganpowell/MinerU/tree/main/docs/zh/usage/acceleration_cards)文档。
 
 ### 安装 MinerOS
 

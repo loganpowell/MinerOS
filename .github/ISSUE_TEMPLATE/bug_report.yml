@@ -1,5 +1,5 @@
 name: 🐛 Bug Report
-description: Create a bug report for MinerU | MinerU 的 Bug 反馈
+description: Create a bug report for MinerOS | MinerOS 的 Bug 反馈
 labels: bug
 
 # We omit `title: "..."` so that the field defaults to blank. If we set it to
@@ -9,29 +9,26 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for submitting a MinerU 🐛 Bug Report! | 感谢您提交 MinerU 🐛 Bug 反馈！
+        Thank you for submitting a MinerOS 🐛 Bug Report! | 感谢您提交 MinerOS 🐛 Bug 反馈！
 
   - type: checkboxes
     attributes:
       label: 🔎 Search before asking | 提交之前请先搜索
       description: >
-        Please search the MinerU [Readme](https://github.com/opendatalab/MinerU), [Issues](https://github.com/opendatalab/MinerU/issues) and [Discussions](https://github.com/opendatalab/MinerU/discussions) to see if a similar bug report already exists.
+        Please search the MinerOS [Readme](https://github.com/loganpowell/MinerOS), [Issues](https://github.com/loganpowell/MinerOS/issues) and [Discussions](https://github.com/loganpowell/MinerOS/discussions) to see if a similar bug report already exists.
       options:
-        - label: I have searched the MinerU [Readme](https://github.com/opendatalab/MinerU) and found no similar bug report.
+        - label: I have searched the MinerOS [Readme](https://github.com/loganpowell/MinerOS) and found no similar bug report.
           required: true
-        - label: I have searched the MinerU [Issues](https://github.com/opendatalab/MinerU/issues) and found no similar bug report.
+        - label: I have searched the MinerOS [Issues](https://github.com/loganpowell/MinerOS/issues) and found no similar bug report.
           required: true
-        - label: I have searched the MinerU [Discussions](https://github.com/opendatalab/MinerU/discussions) and found no similar bug report.
+        - label: I have searched the MinerOS [Discussions](https://github.com/loganpowell/MinerOS/discussions) and found no similar bug report.
           required: true
 
   - type: checkboxes
     attributes:
       label: 🤖 Consult the online AI assistant for assistance | 在线 AI 助手咨询
       description: >
-        This [online AI assistant](https://deepwiki.com/opendatalab/MinerU) is specifically trained to help with MinerU and related topics! It's available 24/7 and ready to provide insights.
-      options:
-        - label: I have consulted the [online AI assistant](https://deepwiki.com/opendatalab/MinerU) but was unable to obtain a solution to the issue.
-          required: true
+        This [online AI assistant](https://deepwiki.com/loganpowell/MinerOS) is specifically trained to help with MinerOS and related topics! It's available 24/7 and ready to provide insights.
 
   - type: textarea
     id: description
@@ -43,12 +40,12 @@ body:
         💡 ProTip! Include as much information as possible (screenshots, logs, tracebacks etc.) to receive the most helpful response.
     validations:
       required: true
-  
+
   - type: textarea
     id: reproduce
     attributes:
       label: How to reproduce the bug | 如何复现
-      
+
       # Should not word-wrap this description here.
       description: |
         If you have questions about the parsing results or encounter errors during execution: | 如对解析结果有疑问或在运行中出现报错等异常:
@@ -56,20 +53,19 @@ body:
         * The demo should include the complete steps, code, and the PDF file to be parsed. | demo需要包含完整的操作步骤，代码，以及需要解析的PDF文件。
         * When reporting parsing result anomalies and runtime errors, reproducible PDF files are essential. If the document is too large or confidential, you can print the problematic page(s) via the browser and submit the corresponding example file.
         * 在反馈解析结果异常和运行时报错时，可复现的PDF文件是必不可少的，如文档过大或涉密，您可通过浏览器打印出出现问题的某一页或某几页再提交相应的示例文件。
-        
-        
-        For problems when building or installing MinerU: | 在构建或安装 MinerU 时遇到的问题:
+
+
+        For problems when building or installing MinerOS: | 在构建或安装 MinerOS 时遇到的问题:
         * Give the **exact** build/install commands that were run. | 提供**确切**的构建/安装命令。
         * Give the **complete** output from these commands. | 提供这些命令的**完整**输出。
-  
+
     validations:
       required: true
 
-#  - type: markdown
-#    attributes:
-#      value: |
-#        # The information below is required.
-
+  #  - type: markdown
+  #    attributes:
+  #      value: |
+  #        # The information below is required.
 
   - type: dropdown
     id: os_mode
@@ -118,7 +114,7 @@ body:
   - type: dropdown
     id: software_version
     attributes:
-      label: Software version | 软件版本 (mineru --version)
+      label: Software version | 软件版本 (MinerOS --version)
       #multiple: false
       options:
         -

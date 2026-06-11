@@ -532,7 +532,7 @@ async def resolve_server_health(http_client, api_url):
 
     local_server, started_now = _gradio_local_api_server.ensure_started()
     if started_now:
-        logger.info(f"Started local mineru-api at {local_server.base_url}")
+        logger.info(f"Started local mineros-api at {local_server.base_url}")
     return await _api_client.wait_for_local_api_ready(http_client, local_server)
 
 
@@ -541,7 +541,7 @@ async def ensure_local_api_ready_for_gradio_startup(
 ):
     local_server, started_now = _gradio_local_api_server.ensure_started()
     if started_now:
-        logger.info(f"Started local mineru-api at {local_server.base_url}")
+        logger.info(f"Started local mineros-api at {local_server.base_url}")
 
     async with httpx.AsyncClient(
         timeout=_api_client.build_http_timeout(),
@@ -1057,14 +1057,14 @@ def update_doc_show(file_path):
     '--api-url',
     'api_url',
     type=str,
-    help="MinerU FastAPI base URL. If omitted, gradio starts a reusable local mineru-api service.",
+    help="MinerOS FastAPI base URL. If omitted, gradio starts a reusable local mineros-api service.",
     default=None,
 )
 @click.option(
     '--enable-vlm-preload',
     'enable_vlm_preload',
     type=bool,
-    help="Preload the local VLM model when gradio starts a local mineru-api service.",
+    help="Preload the local VLM model when gradio starts a local mineros-api service.",
     default=False,
 )
 @click.option(

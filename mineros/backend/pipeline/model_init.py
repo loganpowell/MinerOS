@@ -19,13 +19,15 @@ from ...utils.models_download_utils import auto_download_and_get_model_root_path
 
 PIPELINE_MODEL_INIT_LOCK = threading.RLock()
 
-MFR_MODEL = os.getenv('MINEROS_FORMULA_CH_SUPPORT', 'False')
-if MFR_MODEL.lower() in ['true', '1', 'yes']:
+MFR_MODEL = os.getenv("MINEROS_FORMULA_CH_SUPPORT", "False")
+if MFR_MODEL.lower() in ["true", "1", "yes"]:
     MFR_MODEL = "pp_formulanet_plus_m"
-elif MFR_MODEL.lower() in ['false', '0', 'no']:
+elif MFR_MODEL.lower() in ["false", "0", "no"]:
     MFR_MODEL = "unimernet_small"
 else:
-    logger.warning(f"Invalid MINEROS_FORMULA_CH_SUPPORT value: {MFR_MODEL}, set to default 'False'")
+    logger.warning(
+        f"Invalid MINEROS_FORMULA_CH_SUPPORT value: {MFR_MODEL}, set to default 'False'"
+    )
     MFR_MODEL = "unimernet_small"
 
 
@@ -36,7 +38,7 @@ def img_orientation_cls_model_init():
         det_db_box_thresh=0.5,
         det_db_unclip_ratio=1.6,
         lang="ch_lite",
-        enable_merge_det_boxes=False
+        enable_merge_det_boxes=False,
     )
     cls_model = PaddleOrientationClsModel(ocr_engine)
     return cls_model
@@ -53,7 +55,7 @@ def wired_table_model_init(lang=None):
         det_db_box_thresh=0.5,
         det_db_unclip_ratio=1.6,
         lang=lang,
-        enable_merge_det_boxes=False
+        enable_merge_det_boxes=False,
     )
     table_model = UnetTableModel(ocr_engine)
     return table_model
@@ -66,35 +68,37 @@ def wireless_table_model_init(lang=None):
         det_db_box_thresh=0.5,
         det_db_unclip_ratio=1.6,
         lang=lang,
-        enable_merge_det_boxes=False
+        enable_merge_det_boxes=False,
     )
     table_model = PaddleTableModel(ocr_engine)
     return table_model
 
 
-def mfr_model_init(weight_dir, device='cpu'):
+def mfr_model_init(weight_dir, device="cpu"):
     if MFR_MODEL == "unimernet_small":
         mfr_model = UnimernetModel(weight_dir, device)
     elif MFR_MODEL == "pp_formulanet_plus_m":
         mfr_model = FormulaRecognizer(weight_dir, device)
     else:
-        logger.error('MFR model name not allow')
+        logger.error("MFR model name not allow")
         exit(1)
     return mfr_model
 
 
-def pp_doclayout_v2_model_init(weight, device='cpu'):
-    if str(device).startswith('npu'):
+def pp_doclayout_v2_model_init(weight, device="cpu"):
+    if str(device).startswith("npu"):
         device = torch.device(device)
     model = PPDocLayoutV2LayoutModel(weight, device)
     return model
 
-def ocr_model_init(det_db_box_thresh=0.3,
-                   lang=None,
-                   det_db_unclip_ratio=1.8,
-                   enable_merge_det_boxes=True
-                   ):
-    if lang is not None and lang != '':
+
+def ocr_model_init(
+    det_db_box_thresh=0.3,
+    lang=None,
+    det_db_unclip_ratio=1.8,
+    enable_merge_det_boxes=True,
+):
+    if lang is not None and lang != "":
         model = PytorchPaddleOCR(
             det_db_box_thresh=det_db_box_thresh,
             lang=lang,
@@ -125,87 +129,81 @@ class AtomModelSingleton:
 
     def get_atom_model(self, atom_model_name: str, **kwargs):
 
-        lang = kwargs.get('lang', None)
+        lang = kwargs.get("lang", None)
 
         if atom_model_name in [AtomicModel.WiredTable, AtomicModel.WirelessTable]:
-            key = (
-                atom_model_name,
-                lang
-            )
+            key = (atom_model_name, lang)
         elif atom_model_name in [AtomicModel.OCR]:
             key = (
                 atom_model_name,
-                kwargs.get('det_db_box_thresh', 0.3),
+                kwargs.get("det_db_box_thresh", 0.3),
                 lang,
-                kwargs.get('det_db_unclip_ratio', 1.8),
-                kwargs.get('enable_merge_det_boxes', True)
+                kwargs.get("det_db_unclip_ratio", 1.8),
+                kwargs.get("enable_merge_det_boxes", True),
             )
         elif atom_model_name in [AtomicModel.Layout, AtomicModel.MFR]:
             key = (
                 atom_model_name,
-                kwargs.get('device'),
+                kwargs.get("device"),
             )
         else:
             key = atom_model_name
 
         with self._lock:
             if key not in self._models:
-                self._models[key] = atom_model_init(model_name=atom_model_name, **kwargs)
+                self._models[key] = atom_model_init(
+                    model_name=atom_model_name, **kwargs
+                )
         return self._models[key]
+
 
 def atom_model_init(model_name: str, **kwargs):
     atom_model = None
     if model_name == AtomicModel.Layout:
         atom_model = pp_doclayout_v2_model_init(
-            kwargs.get('pp_doclayout_v2_weights'),
-            kwargs.get('device')
+            kwargs.get("pp_doclayout_v2_weights"), kwargs.get("device")
         )
     elif model_name == AtomicModel.MFR:
-        atom_model = mfr_model_init(
-            kwargs.get('mfr_weight_dir'),
-            kwargs.get('device')
-        )
+        atom_model = mfr_model_init(kwargs.get("mfr_weight_dir"), kwargs.get("device"))
     elif model_name == AtomicModel.OCR:
         atom_model = ocr_model_init(
-            kwargs.get('det_db_box_thresh', 0.3),
-            kwargs.get('lang'),
-            kwargs.get('det_db_unclip_ratio', 1.8),
-            kwargs.get('enable_merge_det_boxes', True)
+            kwargs.get("det_db_box_thresh", 0.3),
+            kwargs.get("lang"),
+            kwargs.get("det_db_unclip_ratio", 1.8),
+            kwargs.get("enable_merge_det_boxes", True),
         )
     elif model_name == AtomicModel.WirelessTable:
         atom_model = wireless_table_model_init(
-            kwargs.get('lang'),
+            kwargs.get("lang"),
         )
     elif model_name == AtomicModel.WiredTable:
         atom_model = wired_table_model_init(
-            kwargs.get('lang'),
+            kwargs.get("lang"),
         )
     elif model_name == AtomicModel.TableCls:
         atom_model = table_cls_model_init()
     elif model_name == AtomicModel.ImgOrientationCls:
         atom_model = img_orientation_cls_model_init()
     else:
-        logger.error('model name not allow')
+        logger.error("model name not allow")
         exit(1)
 
     if atom_model is None:
-        logger.error('model init failed')
+        logger.error("model init failed")
         exit(1)
     else:
         return atom_model
 
 
-class MineruPipelineModel:
+class MinerOSPipelineModel:
     def __init__(self, **kwargs):
-        self.formula_config = kwargs.get('formula_config')
-        self.apply_formula = self.formula_config.get('enable', True)
-        self.table_config = kwargs.get('table_config')
-        self.apply_table = self.table_config.get('enable', True)
-        self.lang = kwargs.get('lang', None)
-        self.device = kwargs.get('device', 'cpu')
-        logger.info(
-            'DocAnalysis init, this may take some times......'
-        )
+        self.formula_config = kwargs.get("formula_config")
+        self.apply_formula = self.formula_config.get("enable", True)
+        self.table_config = kwargs.get("table_config")
+        self.apply_table = self.table_config.get("enable", True)
+        self.lang = kwargs.get("lang", None)
+        self.device = kwargs.get("device", "cpu")
+        logger.info("DocAnalysis init, this may take some times......")
         atom_model_manager = AtomModelSingleton()
 
         if self.apply_formula:
@@ -215,12 +213,17 @@ class MineruPipelineModel:
             elif MFR_MODEL == "pp_formulanet_plus_m":
                 mfr_model_path = ModelPath.pp_formulanet_plus_m
             else:
-                logger.error('MFR model name not allow')
+                logger.error("MFR model name not allow")
                 exit(1)
 
             self.mfr_model = atom_model_manager.get_atom_model(
                 atom_model_name=AtomicModel.MFR,
-                mfr_weight_dir=str(os.path.join(auto_download_and_get_model_root_path(mfr_model_path), mfr_model_path)),
+                mfr_weight_dir=str(
+                    os.path.join(
+                        auto_download_and_get_model_root_path(mfr_model_path),
+                        mfr_model_path,
+                    )
+                ),
                 device=self.device,
             )
 
@@ -228,15 +231,16 @@ class MineruPipelineModel:
         self.layout_model = atom_model_manager.get_atom_model(
             atom_model_name=AtomicModel.Layout,
             pp_doclayout_v2_weights=str(
-                os.path.join(auto_download_and_get_model_root_path(ModelPath.pp_doclayout_v2), ModelPath.pp_doclayout_v2)
+                os.path.join(
+                    auto_download_and_get_model_root_path(ModelPath.pp_doclayout_v2),
+                    ModelPath.pp_doclayout_v2,
+                )
             ),
             device=self.device,
         )
         # 初始化ocr
         self.ocr_model = atom_model_manager.get_atom_model(
-            atom_model_name=AtomicModel.OCR,
-            det_db_box_thresh=0.3,
-            lang=self.lang
+            atom_model_name=AtomicModel.OCR, det_db_box_thresh=0.3, lang=self.lang
         )
         # init table model
         if self.apply_table:
@@ -256,7 +260,7 @@ class MineruPipelineModel:
                 lang=self.lang,
             )
 
-        logger.info('DocAnalysis init done!')
+        logger.info("DocAnalysis init done!")
 
 
 class HybridModelSingleton:
@@ -278,15 +282,17 @@ class HybridModelSingleton:
         key = (lang, formula_enable)
         with self._lock:
             if key not in self._models:
-                self._models[key] = MineruHybridModel(
+                self._models[key] = MinerOSHybridModel(
                     lang=lang,
                     formula_enable=formula_enable,
                 )
         return self._models[key]
 
+
 def ocr_det_batch_setting():
     import torch
     from packaging import version
+
     device_type = os.getenv("MINEROS_LMDEPLOY_DEVICE", "")
     if device_type.lower() in ["corex"]:
         enable_ocr_det_batch = False
@@ -297,12 +303,13 @@ def ocr_det_batch_setting():
 
     return enable_ocr_det_batch
 
-class MineruHybridModel:
+
+class MinerOSHybridModel:
     def __init__(
-            self,
-            device=None,
-            lang=None,
-            formula_enable=True,
+        self,
+        device=None,
+        lang=None,
+        formula_enable=True,
     ):
         if device is not None:
             self.device = device
@@ -313,9 +320,10 @@ class MineruHybridModel:
 
         self.enable_ocr_det_batch = ocr_det_batch_setting()
 
-        if str(self.device).startswith('npu'):
+        if str(self.device).startswith("npu"):
             try:
                 import torch_npu
+
                 if torch_npu.npu.is_available():
                     torch_npu.npu.set_compile_mode(jit_compile=False)
             except Exception as e:
@@ -328,9 +336,7 @@ class MineruHybridModel:
 
         # 初始化OCR模型
         self.ocr_model = self.atom_model_manager.get_atom_model(
-            atom_model_name=AtomicModel.OCR,
-            det_db_box_thresh=0.3,
-            lang=self.lang
+            atom_model_name=AtomicModel.OCR, det_db_box_thresh=0.3, lang=self.lang
         )
 
         if formula_enable:
@@ -339,7 +345,9 @@ class MineruHybridModel:
                 atom_model_name=AtomicModel.Layout,
                 pp_doclayout_v2_weights=str(
                     os.path.join(
-                        auto_download_and_get_model_root_path(ModelPath.pp_doclayout_v2),
+                        auto_download_and_get_model_root_path(
+                            ModelPath.pp_doclayout_v2
+                        ),
                         ModelPath.pp_doclayout_v2,
                     )
                 ),
@@ -352,11 +360,16 @@ class MineruHybridModel:
             elif MFR_MODEL == "pp_formulanet_plus_m":
                 mfr_model_path = ModelPath.pp_formulanet_plus_m
             else:
-                logger.error('MFR model name not allow')
+                logger.error("MFR model name not allow")
                 exit(1)
 
             self.mfr_model = self.atom_model_manager.get_atom_model(
                 atom_model_name=AtomicModel.MFR,
-                mfr_weight_dir=str(os.path.join(auto_download_and_get_model_root_path(mfr_model_path), mfr_model_path)),
+                mfr_weight_dir=str(
+                    os.path.join(
+                        auto_download_and_get_model_root_path(mfr_model_path),
+                        mfr_model_path,
+                    )
+                ),
                 device=self.device,
             )

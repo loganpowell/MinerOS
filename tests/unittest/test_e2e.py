@@ -32,7 +32,7 @@ def test_pipeline_with_two_config():
         if doc_path.suffix in pdf_suffixes + image_suffixes:
             doc_path_list.append(doc_path)
 
-    # os.environ["MINERU_MODEL_SOURCE"] = "modelscope"
+    # os.environ["MINEROS_MODEL_SOURCE"] = "modelscope"
 
     pdf_file_names = []
     pdf_bytes_list = []
@@ -81,7 +81,9 @@ def run_pipeline_parse(
     image_writer_list = []
     output_info = []
     for pdf_file_name in pdf_file_names:
-        local_image_dir, local_md_dir = prepare_env(output_dir, pdf_file_name, parse_method)
+        local_image_dir, local_md_dir = prepare_env(
+            output_dir, pdf_file_name, parse_method
+        )
         image_writer_list.append(FileBasedDataWriter(local_image_dir))
         output_info.append((pdf_file_name, local_image_dir, local_md_dir))
 

@@ -49,10 +49,10 @@ TASK_FAILED = "failed"
 TASK_TERMINAL_STATES = {TASK_COMPLETED, TASK_FAILED}
 DEFAULT_TASK_RETENTION_SECONDS = 24 * 60 * 60
 DEFAULT_TASK_CLEANUP_INTERVAL_SECONDS = 5 * 60
-FILE_PARSE_TASK_ID_HEADER = "X-MinerU-Task-Id"
-FILE_PARSE_TASK_STATUS_HEADER = "X-MinerU-Task-Status"
-FILE_PARSE_TASK_STATUS_URL_HEADER = "X-MinerU-Task-Status-Url"
-FILE_PARSE_TASK_RESULT_URL_HEADER = "X-MinerU-Task-Result-Url"
+FILE_PARSE_TASK_ID_HEADER = "X-MinerOS-Task-Id"
+FILE_PARSE_TASK_STATUS_HEADER = "X-MinerOS-Task-Status"
+FILE_PARSE_TASK_STATUS_URL_HEADER = "X-MinerOS-Task-Status-Url"
+FILE_PARSE_TASK_RESULT_URL_HEADER = "X-MinerOS-Task-Result-Url"
 HEALTH_ENDPOINT = "/health"
 TASKS_ENDPOINT = "/tasks"
 SOURCE_LOCAL = "local"
@@ -509,7 +509,7 @@ class WorkerPool:
 
         await self.refresh_all()
         if self._monitor_task is None or self._monitor_task.done():
-            self._monitor_task = asyncio.create_task(self._monitor_loop(), name="mineru-router-worker-monitor")
+            self._monitor_task = asyncio.create_task(self._monitor_loop(), name="mineros-router-worker-monitor")
 
     async def shutdown(self) -> None:
         if self._monitor_task is not None:
@@ -704,7 +704,7 @@ class WorkerPool:
             "servers": servers,
         }
         if not healthy_servers:
-            payload["error"] = "No healthy upstream MinerU API servers are available"
+            payload["error"] = "No healthy upstream MinerOS API servers are available"
         return bool(healthy_servers), payload
 
 
@@ -725,7 +725,7 @@ class RouterTaskRegistry:
         if self.task_retention_seconds <= 0:
             return
         if self._cleanup_task is None or self._cleanup_task.done():
-            self._cleanup_task = asyncio.create_task(self._cleanup_loop(), name="mineru-router-task-cleanup")
+            self._cleanup_task = asyncio.create_task(self._cleanup_loop(), name="mineros-router-task-cleanup")
 
     async def shutdown(self) -> None:
         if self._cleanup_task is not None:
@@ -855,7 +855,7 @@ class RouterTaskRegistry:
 def warn_if_router_preload_ignored(settings: RouterSettings) -> None:
     if settings.enable_vlm_preload and not parse_local_gpus(settings.local_gpus):
         logger.warning(
-            "Ignoring --enable-vlm-preload because mineru-router is not launching any local mineru-api workers."
+            "Ignoring --enable-vlm-preload because mineros-router is not launching any local mineros-api workers."
         )
 
 
@@ -878,7 +878,7 @@ async def startup_router_state(app: FastAPI, settings: RouterSettings) -> None:
             raise RuntimeError(
                 payload.get(
                     "error",
-                    "No healthy upstream MinerU API servers are available",
+                    "No healthy upstream MinerOS API servers are available",
                 )
             )
     except Exception:
@@ -936,7 +936,7 @@ def build_upload_destination(upload_dir: str, filename: str) -> Path:
 
 
 async def stage_multipart_request(request: Request) -> MultipartPayload:
-    temp_dir = tempfile.mkdtemp(prefix="mineru-router-request-")
+    temp_dir = tempfile.mkdtemp(prefix="mineros-router-request-")
     uploads: list[StagedUpload] = []
     fields: list[tuple[str, str]] = []
 
@@ -973,15 +973,15 @@ async def stage_multipart_request(request: Request) -> MultipartPayload:
 
 def parse_submit_response(payload: Any) -> dict[str, Any]:
     if not isinstance(payload, dict):
-        raise ValueError("MinerU upstream returned an invalid submit payload")
+        raise ValueError("MinerOS upstream returned an invalid submit payload")
     task_id = payload.get("task_id")
     status = payload.get("status")
     backend = payload.get("backend")
     created_at = payload.get("created_at")
     if not isinstance(task_id, str) or not isinstance(status, str) or not isinstance(backend, str):
-        raise ValueError("MinerU upstream returned an invalid submit payload")
+        raise ValueError("MinerOS upstream returned an invalid submit payload")
     if created_at is not None and not isinstance(created_at, str):
-        raise ValueError("MinerU upstream returned an invalid submit payload")
+        raise ValueError("MinerOS upstream returned an invalid submit payload")
     return {
         "task_id": task_id,
         "status": status,
@@ -1064,7 +1064,7 @@ async def submit_router_task(
         server = await worker_pool.acquire_submission_server(excluded_server_ids=attempted_servers)
         if server is None:
             if last_error is None:
-                raise HTTPException(status_code=503, detail="No healthy upstream MinerU API servers are available")
+                raise HTTPException(status_code=503, detail="No healthy upstream MinerOS API servers are available")
             raise HTTPException(status_code=503, detail=last_error)
 
         try:
@@ -1397,7 +1397,7 @@ app = create_app()
     "--upstream-url",
     "upstream_urls",
     multiple=True,
-    help="Existing MinerU FastAPI base URL. Repeat to add multiple upstream servers.",
+    help="Existing MinerOS FastAPI base URL. Repeat to add multiple upstream servers.",
 )
 @click.option(
     "--local-gpus",
@@ -1407,14 +1407,14 @@ app = create_app()
 @click.option(
     "--worker-host",
     default="127.0.0.1",
-    help="Host for router-managed mineru-api workers (default: 127.0.0.1).",
+    help="Host for router-managed mineros-api workers (default: 127.0.0.1).",
 )
 @click.option(
     "--enable-vlm-preload",
     "enable_vlm_preload",
     type=bool,
     default=False,
-    help="Preload the local VLM model in router-managed mineru-api workers.",
+    help="Preload the local VLM model in router-managed mineros-api workers.",
 )
 def main(
     ctx: click.Context,
@@ -1445,7 +1445,7 @@ def main(
     os.environ["MINEROS_ROUTER_WORKER_ARGS_JSON"] = json.dumps(list(settings.worker_extra_args))
 
     access_log = not env_flag_enabled("MINEROS_API_DISABLE_ACCESS_LOG")
-    print(f"Start MinerU Router Service: http://{host}:{port}")
+    print(f"Start MinerOS Router Service: http://{host}:{port}")
     print(f"API documentation: http://{host}:{port}/docs")
 
     if reload:

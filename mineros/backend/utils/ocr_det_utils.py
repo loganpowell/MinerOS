@@ -15,20 +15,19 @@ def get_ch_lite_ocr_det_model():
     except Exception as e:
         logger.error(
             "Failed to import AtomModelSingleton, OCR detection will not work. If you want to use OCR features, "
-            "please execute `pip install mineru[core]` to install the required packages."
+            "please execute `pip install mineros[core]` to install the required packages."
         )
         raise e
 
     atom_model_manager = AtomModelSingleton()
     return atom_model_manager.get_atom_model(
-        atom_model_name='ocr',
-        ocr_show_log=False,
-        det_db_box_thresh=0.3,
-        lang='ch_lite'
+        atom_model_name="ocr", ocr_show_log=False, det_db_box_thresh=0.3, lang="ch_lite"
     )
 
 
-def detect_ocr_boxes_from_padded_crop(bbox, page_pil_img, scale, ocr_model=None, padding=OCR_DET_PADDING):
+def detect_ocr_boxes_from_padded_crop(
+    bbox, page_pil_img, scale, ocr_model=None, padding=OCR_DET_PADDING
+):
     if not bbox:
         return [], padding
 
@@ -39,7 +38,13 @@ def detect_ocr_boxes_from_padded_crop(bbox, page_pil_img, scale, ocr_model=None,
 
     if padding > 0:
         crop_np_img = cv2.copyMakeBorder(
-            crop_np_img, padding, padding, padding, padding, cv2.BORDER_CONSTANT, value=[255, 255, 255]
+            crop_np_img,
+            padding,
+            padding,
+            padding,
+            padding,
+            cv2.BORDER_CONSTANT,
+            value=[255, 255, 255],
         )
 
     crop_img = cv2.cvtColor(crop_np_img, cv2.COLOR_RGB2BGR)

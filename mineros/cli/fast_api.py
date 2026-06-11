@@ -79,10 +79,10 @@ DEFAULT_TASK_RETENTION_SECONDS = 24 * 60 * 60
 DEFAULT_TASK_CLEANUP_INTERVAL_SECONDS = 5 * 60
 DEFAULT_OUTPUT_ROOT = "./output"
 ALLOWED_PARSE_METHODS = {"auto", "txt", "ocr"}
-FILE_PARSE_TASK_ID_HEADER = "X-MinerU-Task-Id"
-FILE_PARSE_TASK_STATUS_HEADER = "X-MinerU-Task-Status"
-FILE_PARSE_TASK_STATUS_URL_HEADER = "X-MinerU-Task-Status-Url"
-FILE_PARSE_TASK_RESULT_URL_HEADER = "X-MinerU-Task-Result-Url"
+FILE_PARSE_TASK_ID_HEADER = "X-MinerOS-Task-Id"
+FILE_PARSE_TASK_STATUS_HEADER = "X-MinerOS-Task-Status"
+FILE_PARSE_TASK_STATUS_URL_HEADER = "X-MinerOS-Task-Status-Url"
+FILE_PARSE_TASK_RESULT_URL_HEADER = "X-MinerOS-Task-Result-Url"
 SWAGGER_UI_FILE_ARRAY_SCHEMA_EXTRA = {
     # Swagger UI 5 currently fails to render a usable multi-file picker when
     # FastAPI emits OpenAPI 3.1 byte arrays with contentMediaType.
@@ -122,7 +122,7 @@ def install_stdin_shutdown_watcher(server: uvicorn.Server) -> None:
 
     watcher = threading.Thread(
         target=_watch_stdin_for_eof,
-        name="mineru-api-stdin-shutdown",
+        name="mineros-api-stdin-shutdown",
         daemon=True,
     )
     watcher.start()
@@ -428,7 +428,9 @@ def normalize_lang_list(lang_list: list[str], file_count: int) -> list[str]:
     return [base_lang] * file_count
 
 
-def get_parse_dir(output_dir: str, pdf_name: str, backend: str, parse_method: str) -> str:
+def get_parse_dir(
+    output_dir: str, pdf_name: str, backend: str, parse_method: str
+) -> str:
     return str(
         resolve_parse_dir(
             output_dir,
@@ -511,7 +513,7 @@ def create_result_zip(
     return_images: bool,
     return_original_file: bool,
 ) -> str:
-    zip_fd, zip_path = tempfile.mkstemp(suffix=".zip", prefix="mineru_results_")
+    zip_fd, zip_path = tempfile.mkstemp(suffix=".zip", prefix="mineros_results_")
     os.close(zip_fd)
 
     with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED) as zf:
@@ -864,7 +866,9 @@ async def parse_request_form(
     )
 
 
-async def save_upload_files(upload_dir: str, files: list[UploadFile]) -> list[StoredUpload]:
+async def save_upload_files(
+    upload_dir: str, files: list[UploadFile]
+) -> list[StoredUpload]:
     os.makedirs(upload_dir, exist_ok=True)
     uploads: list[StoredUpload] = []
 
@@ -933,7 +937,9 @@ def load_parse_inputs(uploads: list[StoredUpload]) -> tuple[list[str], list[byte
         try:
             pdf_bytes = read_fn(Path(upload.path))
         except Exception as exc:
-            raise RuntimeError(f"Failed to load file {upload.original_name}: {exc}") from exc
+            raise RuntimeError(
+                f"Failed to load file {upload.original_name}: {exc}"
+            ) from exc
         pdf_file_names.append(upload.stem)
         pdf_bytes_list.append(pdf_bytes)
     return pdf_file_names, pdf_bytes_list
@@ -946,7 +952,9 @@ async def run_parse_job(
     config: dict[str, Any],
 ) -> list[str]:
     pdf_file_names, pdf_bytes_list = await asyncio.to_thread(load_parse_inputs, uploads)
-    actual_lang_list = normalize_lang_list(request_options.lang_list, len(pdf_file_names))
+    actual_lang_list = normalize_lang_list(
+        request_options.lang_list, len(pdf_file_names)
+    )
     response_file_names = list(pdf_file_names)
 
     parse_kwargs = dict(
@@ -1055,14 +1063,13 @@ class AsyncTaskManager:
         self.manager_wakeup = asyncio.Event()
         if self.dispatcher_task is None or self.dispatcher_task.done():
             self.dispatcher_task = asyncio.create_task(
-                self._dispatcher_loop(), name="mineru-fastapi-task-dispatcher"
+                self._dispatcher_loop(), name="mineros-fastapi-task-dispatcher"
             )
-        if (
-            self.task_retention_seconds > 0
-            and (self.cleanup_task is None or self.cleanup_task.done())
+        if self.task_retention_seconds > 0 and (
+            self.cleanup_task is None or self.cleanup_task.done()
         ):
             self.cleanup_task = asyncio.create_task(
-                self._cleanup_loop(), name="mineru-fastapi-task-cleanup"
+                self._cleanup_loop(), name="mineros-fastapi-task-cleanup"
             )
 
     async def shutdown(self) -> None:
@@ -1209,7 +1216,7 @@ class AsyncTaskManager:
                 task_id = await self.queue.get()
                 processor = asyncio.create_task(
                     self._process_task(task_id),
-                    name=f"mineru-fastapi-task-{task_id}",
+                    name=f"mineros-fastapi-task-{task_id}",
                 )
                 self.active_tasks.add(processor)
                 processor.add_done_callback(self._on_processor_done)
@@ -1321,7 +1328,9 @@ class AsyncTaskManager:
         try:
             completed_at = datetime.fromisoformat(task.completed_at)
         except ValueError:
-            logger.warning(f"Invalid completed_at for task {task.task_id}: {task.completed_at}")
+            logger.warning(
+                f"Invalid completed_at for task {task.task_id}: {task.completed_at}"
+            )
             return False
         if completed_at.tzinfo is None:
             completed_at = completed_at.replace(tzinfo=timezone.utc)
@@ -1347,9 +1356,7 @@ def get_task_manager() -> AsyncTaskManager:
 async def parse_pdf(
     http_request: Request,
     background_tasks: BackgroundTasks,
-    request_options: Annotated[
-        ParseRequestOptions, Depends(parse_request_form)
-    ],
+    request_options: Annotated[ParseRequestOptions, Depends(parse_request_form)],
 ):
     task = await create_async_parse_task(request_options)
     request_options = None
@@ -1394,9 +1401,7 @@ async def parse_pdf(
 )
 async def submit_parse_task(
     http_request: Request,
-    request_options: Annotated[
-        ParseRequestOptions, Depends(parse_request_form)
-    ],
+    request_options: Annotated[ParseRequestOptions, Depends(parse_request_form)],
 ):
     task_manager = get_task_manager()
     task = await create_async_parse_task(request_options)
@@ -1514,7 +1519,7 @@ async def health_check():
     "enable_vlm_preload",
     type=bool,
     default=False,
-    help="Preload the local VLM model during mineru-api startup.",
+    help="Preload the local VLM model during mineros-api startup.",
 )
 def main(ctx, host, port, reload, enable_vlm_preload, **kwargs):
     del kwargs
@@ -1529,7 +1534,7 @@ def main(ctx, host, port, reload, enable_vlm_preload, **kwargs):
     )
     access_log = not env_flag_enabled("MINEROS_API_DISABLE_ACCESS_LOG")
 
-    print(f"Start MinerU FastAPI Service: http://{host}:{port}")
+    print(f"Start MinerOS FastAPI Service: http://{host}:{port}")
     print(f"API documentation: http://{host}:{port}/docs")
 
     if reload:

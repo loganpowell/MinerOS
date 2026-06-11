@@ -47,7 +47,7 @@ def resolve_gradio_local_api_cli_args(
 ) -> tuple[str, ...]:
     if enable_vlm_preload and api_url:
         logger.warning(
-            "Ignoring --enable-vlm-preload because --api-url points to an existing MinerU FastAPI service."
+            "Ignoring --enable-vlm-preload because --api-url points to an existing MinerOS FastAPI service."
         )
         return tuple(extra_cli_args)
 

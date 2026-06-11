@@ -885,7 +885,7 @@ async def run_orchestrated_cli(
             if api_url is None:
                 local_server = LocalAPIServer(extra_cli_args=extra_cli_args)
                 base_url = local_server.start()
-                logger.info(f"Started local mineru-api at {base_url}")
+                logger.info(f"Started local mineros-api at {base_url}")
                 server_health = await wait_for_local_api_ready(
                     http_client, local_server
                 )
@@ -997,7 +997,7 @@ async def run_orchestrated_cli(
     "api_url",
     type=str,
     default=None,
-    help="MinerU FastAPI base URL. If omitted, mineru starts a temporary local mineru-api service.",
+    help="MinerOS FastAPI base URL. If omitted, mineros starts a temporary local mineros-api service.",
 )
 @click.option(
     "-m",

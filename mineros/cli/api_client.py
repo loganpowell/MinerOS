@@ -98,7 +98,7 @@ def _signal_process_tree(process: subprocess.Popen[bytes], *, force: bool) -> No
             )
         except Exception as exc:
             logger.debug(
-                "Failed to signal managed MinerU process tree {} on Windows: {}",
+                "Failed to signal managed MinerOS process tree {} on Windows: {}",
                 process.pid,
                 exc,
             )
@@ -111,7 +111,7 @@ def _signal_process_tree(process: subprocess.Popen[bytes], *, force: bool) -> No
         return
     except OSError as exc:
         logger.debug(
-            "Failed to signal managed MinerU process group {}: {}",
+            "Failed to signal managed MinerOS process group {}: {}",
             process.pid,
             exc,
         )
@@ -155,7 +155,7 @@ def stop_managed_process(
             exited_via_stdin_eof = True
         except subprocess.TimeoutExpired:
             logger.debug(
-                "Managed MinerU process did not stop after stdin EOF within {}s. Falling back to process-tree termination.",
+                "Managed MinerOS process did not stop after stdin EOF within {}s. Falling back to process-tree termination.",
                 shutdown_timeout_seconds,
             )
 
@@ -174,7 +174,7 @@ def stop_managed_process(
             process.wait(timeout=shutdown_timeout_seconds)
         except subprocess.TimeoutExpired:
             logger.warning(
-                "Managed MinerU process {} did not exit after forceful stop.",
+                "Managed MinerOS process {} did not exit after forceful stop.",
                 process.pid,
             )
 
@@ -212,7 +212,7 @@ class TaskStatusSnapshot:
 
 class LocalAPIServer:
     def __init__(self, extra_cli_args: Sequence[str] = ()):
-        self.temp_dir = tempfile.TemporaryDirectory(prefix="mineru-api-client-")
+        self.temp_dir = tempfile.TemporaryDirectory(prefix="mineros-api-client-")
         self.temp_root = Path(self.temp_dir.name)
         self.output_root = self.temp_root / "output"
         self.base_url: str | None = None
@@ -302,7 +302,7 @@ class LocalAPIServer:
 
         if last_error is not None:
             logger.warning(
-                "Failed to clean up temporary MinerU API directory {}: {}. "
+                "Failed to clean up temporary MinerOS API directory {}: {}. "
                 "You can remove it manually after processes release any open handles.",
                 self.temp_root,
                 last_error,
@@ -433,13 +433,13 @@ def validate_server_health_payload(payload: dict, base_url: str) -> ServerHealth
     status = payload.get("status")
     if status != "healthy":
         raise click.ClickException(
-            f"MinerU API at {base_url} is not healthy: {json.dumps(payload, ensure_ascii=False)}"
+            f"MinerOS API at {base_url} is not healthy: {json.dumps(payload, ensure_ascii=False)}"
         )
 
     protocol_version = payload.get("protocol_version")
     if protocol_version != API_PROTOCOL_VERSION:
         raise click.ClickException(
-            f"MinerU API at {base_url} returned protocol_version={protocol_version}, "
+            f"MinerOS API at {base_url} returned protocol_version={protocol_version}, "
             f"expected {API_PROTOCOL_VERSION}"
         )
 
@@ -447,11 +447,11 @@ def validate_server_health_payload(payload: dict, base_url: str) -> ServerHealth
     processing_window_size = payload.get("processing_window_size")
     if not isinstance(max_concurrent_requests, int) or max_concurrent_requests <= 0:
         raise click.ClickException(
-            f"MinerU API at {base_url} did not return a valid positive max_concurrent_requests"
+            f"MinerOS API at {base_url} did not return a valid positive max_concurrent_requests"
         )
     if not isinstance(processing_window_size, int):
         raise click.ClickException(
-            f"MinerU API at {base_url} did not return a valid processing_window_size"
+            f"MinerOS API at {base_url} did not return a valid processing_window_size"
         )
 
     return ServerHealth(
@@ -468,7 +468,7 @@ async def fetch_server_health(
     response = await client.get(f"{base_url}{HEALTH_ENDPOINT}")
     if response.status_code != 200:
         raise click.ClickException(
-            f"Failed to query MinerU API health from {base_url}: "
+            f"Failed to query MinerOS API health from {base_url}: "
             f"{response.status_code} {response_detail(response)}"
         )
     return validate_server_health_payload(response.json(), base_url)
@@ -487,7 +487,7 @@ async def wait_for_local_api_ready(
         process = local_server.process
         if process is not None and process.poll() is not None:
             raise click.ClickException(
-                "Local mineru-api exited before becoming healthy."
+                "Local mineros-api exited before becoming healthy."
             )
         try:
             return await fetch_server_health(client, local_server.base_url)
@@ -497,7 +497,7 @@ async def wait_for_local_api_ready(
             last_error = str(exc)
         await asyncio.sleep(TASK_STATUS_POLL_INTERVAL_SECONDS)
 
-    message = "Timed out waiting for local mineru-api to become healthy."
+    message = "Timed out waiting for local mineros-api to become healthy."
     if last_error:
         message = f"{message} {last_error}"
     raise click.ClickException(message)
@@ -604,7 +604,7 @@ def submit_parse_task_sync(
         or not isinstance(status_url, str)
         or not isinstance(result_url, str)
     ):
-        raise click.ClickException("MinerU API returned an invalid task payload")
+        raise click.ClickException("MinerOS API returned an invalid task payload")
 
     normalized_file_names: tuple[str, ...] = ()
     if isinstance(file_names, list) and all(isinstance(name, str) for name in file_names):
@@ -697,7 +697,7 @@ async def download_result_zip(
             f"got content-type={content_type or 'unknown'}"
         )
 
-    zip_fd, zip_path = tempfile.mkstemp(suffix=".zip", prefix="mineru_cli_result_")
+    zip_fd, zip_path = tempfile.mkstemp(suffix=".zip", prefix="mineros_cli_result_")
     os.close(zip_fd)
     Path(zip_path).write_bytes(response.content)
     return Path(zip_path)

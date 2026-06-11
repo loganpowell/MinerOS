@@ -21,10 +21,10 @@ from pathlib import Path
 
 def test_rendering():
     """Test the markdown rendering layer directly with synthetic para_blocks."""
-    from mineru.backend.pipeline.pipeline_middle_json_mkcontent import (
+    from mineros.backend.pipeline.pipeline_middle_json_mkcontent import (
         merge_para_with_text,
     )
-    from mineru.utils.enum_class import ContentType, BlockType
+    from mineros.utils.enum_class import ContentType, BlockType
 
     def make_text_span(content, styles=None):
         span = {"type": ContentType.TEXT, "content": content}
@@ -187,21 +187,21 @@ def inspect_pdf(pdf_path: str):
 # ── PDF text extraction test ───────────────────────────────────────────────────
 
 
-def process_pdf(pdf_path: str, output_dir: str = "/tmp/mineru-strikethrough-test"):
+def process_pdf(pdf_path: str, output_dir: str = "/tmp/mineros-strikethrough-test"):
     """
     Run a PDF through the txt-mode text extraction pipeline and print the
     resulting markdown. This exercises the full rendering path without ML.
     """
     import os
     import json
-    from mineru.utils.pdf_text_tool import get_page
-    from mineru.backend.pipeline.pipeline_middle_json_mkcontent import (
+    from mineros.utils.pdf_text_tool import get_page
+    from mineros.backend.pipeline.pipeline_middle_json_mkcontent import (
         merge_para_with_text,
     )
-    from mineru.utils.enum_class import ContentType, BlockType
+    from mineros.utils.enum_class import ContentType, BlockType
     import pypdfium2 as pdfium
     import pypdfium2.raw as pdfium_c
-    from mineru.utils.pdfium_guard import pdfium_guard
+    from mineros.utils.pdfium_guard import pdfium_guard
 
     STRIKEOUT_SUBTYPE = 12
 

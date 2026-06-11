@@ -1,10 +1,10 @@
-# 使用docker部署Mineru
+# 使用docker部署MinerOS
 
 MinerOS提供了便捷的docker部署方式，这有助于快速搭建环境并解决一些棘手的环境兼容问题。
 
 ## Docker说明
 
-Mineru的docker使用了`vllm/vllm-openai`作为基础镜像，因此在docker中默认集成了`vllm`推理加速框架和必需的依赖环境。因此在满足条件的设备上，您可以直接使用`vllm`加速VLM模型推理。
+MinerOS的docker使用了`vllm/vllm-openai`作为基础镜像，因此在docker中默认集成了`vllm`推理加速框架和必需的依赖环境。因此在满足条件的设备上，您可以直接使用`vllm`加速VLM模型推理。
 
 > [!NOTE]
 > 使用`vllm`加速VLM模型推理需要满足的条件是：

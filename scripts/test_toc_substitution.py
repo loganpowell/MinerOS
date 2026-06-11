@@ -2,7 +2,7 @@
 
 import sys
 
-sys.path.insert(0, "/Users/logan.powell/Documents/projects/ctd/MinerU")
+sys.path.insert(0, "/Users/logan.powell/Documents/projects/ctd/MinerOS")
 import re
 from mineros.utils.strikethrough_utils import _substitute_struck_phrases
 
@@ -32,7 +32,7 @@ page2_phrases = [
 
 # Simulate what VLM might output for the TOC (from the existing .md)
 # Read from the existing output
-md_path = "/Users/logan.powell/Documents/projects/ctd/MinerU/output/22802bid03_appendixbtracked_0/vlm/22802bid03_appendixbtracked_0.md"
+md_path = "/Users/logan.powell/Documents/projects/ctd/MinerOS/output/22802bid03_appendixbtracked_0/vlm/22802bid03_appendixbtracked_0.md"
 with open(md_path) as f:
     existing_md = f.read()
 

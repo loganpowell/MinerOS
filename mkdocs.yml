@@ -74,44 +74,43 @@ copyright: © 2024 - 2025 MinerU. All Rights Reserved.
 
 nav:
   - Home:
-    - "MinerU": index.md
-    - Quick Start:
+      - "MinerU": index.md
+      - Quick Start:
+          - Quick Start: quick_start/index.md
+          - Extension Modules: quick_start/extension_modules.md
+          - Docker Deployment: quick_start/docker_deployment.md
+      - Usage:
+          - Usage: usage/index.md
+          - Quick Usage: usage/quick_usage.md
+          - Model Source: usage/model_source.md
+          - CLI Tools: usage/cli_tools.md
+          - Advanced CLI Parameters: usage/advanced_cli_parameters.md
+      - Reference:
+          - Reference: reference/index.md
+          - Output File Format: reference/output_files.md
+          - Changelog: reference/changelog.md
+      - FAQ:
+          - FAQ: faq/index.md
+      - Demo:
+          - Demo: demo/index.md
+  - Quick Start:
       - Quick Start: quick_start/index.md
       - Extension Modules: quick_start/extension_modules.md
       - Docker Deployment: quick_start/docker_deployment.md
-    - Usage:
+  - Usage:
       - Usage: usage/index.md
       - Quick Usage: usage/quick_usage.md
       - Model Source: usage/model_source.md
       - CLI Tools: usage/cli_tools.md
       - Advanced CLI Parameters: usage/advanced_cli_parameters.md
-    - Reference:
+  - Reference:
       - Reference: reference/index.md
       - Output File Format: reference/output_files.md
       - Changelog: reference/changelog.md
-    - FAQ:
-      - FAQ: faq/index.md
-    - Demo:
-      - Demo: demo/index.md
-  - Quick Start:
-    - Quick Start: quick_start/index.md
-    - Extension Modules: quick_start/extension_modules.md
-    - Docker Deployment: quick_start/docker_deployment.md
-  - Usage:
-    - Usage: usage/index.md
-    - Quick Usage: usage/quick_usage.md
-    - Model Source: usage/model_source.md
-    - CLI Tools: usage/cli_tools.md
-    - Advanced CLI Parameters: usage/advanced_cli_parameters.md
-  - Reference:
-    - Reference: reference/index.md
-    - Output File Format: reference/output_files.md
-    - Changelog: reference/changelog.md
   - FAQ:
-    - FAQ: faq/index.md
+      - FAQ: faq/index.md
   - Demo:
-    - Demo: demo/index.md
-
+      - Demo: demo/index.md
 
 plugins:
   - search

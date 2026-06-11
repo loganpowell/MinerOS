@@ -4,12 +4,12 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
-file_path = ROOT / "mineru/backend/pipeline/pipeline_middle_json_mkcontent.py"
+file_path = ROOT / "mineros/backend/pipeline/pipeline_middle_json_mkcontent.py"
 
 src = file_path.read_text(encoding="utf-8")
 
 # ── Verify tilde fix in markdown_utils.py ─────────────────────────────────────
-utils_path = ROOT / "mineru/backend/utils/markdown_utils.py"
+utils_path = ROOT / "mineros/backend/utils/markdown_utils.py"
 utils_src = utils_path.read_text(encoding="utf-8")
 if '"~"' in utils_src or "'~'" in utils_src:
     print("⚠  ~ still present in CONSERVATIVE_MARKDOWN_SPECIAL_CHARS — fixing…")

@@ -51,8 +51,8 @@ class HybridDependencyError(RuntimeError):
 
 def build_hybrid_dependency_error_message(backend: str) -> str:
     return (
-        f"`{backend}` requires local pipeline dependencies (`mineru[pipeline]`, "
-        "including `torch`). Install `mineru[pipeline]` or `mineru[core]`. "
+        f"`{backend}` requires local pipeline dependencies (`mineros[pipeline]`, "
+        "including `torch`). Install `mineros[pipeline]` or `mineros[core]`. "
         "If you need a lightweight remote client without local `torch`, "
         "use `vlm-http-client` instead."
     )
@@ -68,7 +68,9 @@ def ensure_backend_dependencies(backend: str) -> None:
 def _load_hybrid_analyze_entrypoint(entrypoint_name: str, backend: str):
     ensure_backend_dependencies(backend)
     try:
-        hybrid_analyze = importlib.import_module("mineros.backend.hybrid.hybrid_analyze")
+        hybrid_analyze = importlib.import_module(
+            "mineros.backend.hybrid.hybrid_analyze"
+        )
     except (ImportError, ModuleNotFoundError) as exc:
         raise HybridDependencyError(
             build_hybrid_dependency_error_message(backend)

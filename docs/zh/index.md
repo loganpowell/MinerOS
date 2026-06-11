@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE.md)
 [![Python Version](https://img.shields.io/badge/python-3.10--3.13-blue)](https://github.com/loganpowell/MinerOS)
 
-**MinerOS** 是 [MinerU](https://github.com/opendatalab/MinerU) 的 Apache 2.0 授权分支 —— 一款高精度文档解析引擎，可将 PDF、Word、PPT 及图片转换为结构化的 Markdown/JSON，适用于 LLM · RAG · Agent 工作流。
+**MinerOS** 是 [MinerOS](https://github.com/loganpowell/MinerOS) 的 Apache 2.0 授权分支 —— 一款高精度文档解析引擎，可将 PDF、Word、PPT 及图片转换为结构化的 Markdown/JSON，适用于 LLM · RAG · Agent 工作流。
 
 ## 为什么叫 "OS"？
 
@@ -29,7 +29,7 @@ MinerU 上游的许可证历史较为复杂：该项目曾短暂采用 AGPLv3，
 
 MinerOS 是一款文档解析工具，可将 `PDF`、图片和 `DOCX` 转化为机器可读格式（如 Markdown、JSON），便于后续检索、抽取与二次处理。
 MinerOS诞生于[书生-浦语](https://github.com/InternLM/InternLM)的预训练过程中，我们将会集中精力解决科技文献中的符号转化问题，希望在大模型时代为科技发展做出贡献。
-相比国内外知名商用产品MinerOS还很年轻，如果遇到问题或者结果不及预期请到[issue](https://github.com/opendatalab/MinerU/issues)提交问题，同时**附上相关文档或样例文件**。
+相比国内外知名商用产品MinerOS还很年轻，如果遇到问题或者结果不及预期请到[issue](https://github.com/loganpowell/MinerOS/issues)提交问题，同时**附上相关文档或样例文件**。
 
 ![type:video](https://github.com/user-attachments/assets/4bea02c9-6d54-4cd6-97ed-dff14340982c)
 
