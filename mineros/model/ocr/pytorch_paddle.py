@@ -225,11 +225,11 @@ class PytorchPaddleOCR(TextSystem):
         if not self.is_seal:
             return None
 
-        debug_dir = os.getenv("MINERU_SEAL_OCR_DEBUG_DIR")
+        debug_dir = os.getenv("MINEROS_SEAL_OCR_DEBUG_DIR")
         if debug_dir:
             return debug_dir
 
-        debug_enable = os.getenv("MINERU_SEAL_OCR_DEBUG", "").lower()
+        debug_enable = os.getenv("MINEROS_SEAL_OCR_DEBUG", "").lower()
         if debug_enable in {"1", "true", "yes", "on"}:
             return DEFAULT_SEAL_DEBUG_DIR
 

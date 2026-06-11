@@ -101,7 +101,7 @@ def _parse_json_object_response(
 
 def get_task_retention_seconds() -> int:
     return get_int_env(
-        "MINERU_API_TASK_RETENTION_SECONDS",
+        "MINEROS_API_TASK_RETENTION_SECONDS",
         DEFAULT_TASK_RETENTION_SECONDS,
         minimum=0,
     )
@@ -109,7 +109,7 @@ def get_task_retention_seconds() -> int:
 
 def get_task_cleanup_interval_seconds() -> int:
     return get_int_env(
-        "MINERU_API_TASK_CLEANUP_INTERVAL_SECONDS",
+        "MINEROS_API_TASK_CLEANUP_INTERVAL_SECONDS",
         DEFAULT_TASK_CLEANUP_INTERVAL_SECONDS,
         minimum=1,
     )
@@ -222,14 +222,14 @@ class RouterSettings:
     @classmethod
     def from_env(cls) -> "RouterSettings":
         return cls(
-            upstream_urls=parse_json_env("MINERU_ROUTER_UPSTREAM_URLS_JSON"),
-            local_gpus=os.getenv("MINERU_ROUTER_LOCAL_GPUS", LOCAL_GPU_AUTO),
-            worker_host=os.getenv("MINERU_ROUTER_WORKER_HOST", "127.0.0.1"),
+            upstream_urls=parse_json_env("MINEROS_ROUTER_UPSTREAM_URLS_JSON"),
+            local_gpus=os.getenv("MINEROS_ROUTER_LOCAL_GPUS", LOCAL_GPU_AUTO),
+            worker_host=os.getenv("MINEROS_ROUTER_WORKER_HOST", "127.0.0.1"),
             enable_vlm_preload=env_flag_enabled(
-                "MINERU_ROUTER_ENABLE_VLM_PRELOAD",
+                "MINEROS_ROUTER_ENABLE_VLM_PRELOAD",
                 default=False,
             ),
-            worker_extra_args=parse_json_env("MINERU_ROUTER_WORKER_ARGS_JSON"),
+            worker_extra_args=parse_json_env("MINEROS_ROUTER_WORKER_ARGS_JSON"),
             task_retention_seconds=get_task_retention_seconds(),
             task_cleanup_interval_seconds=get_task_cleanup_interval_seconds(),
         )
@@ -327,8 +327,8 @@ class ManagedLocalServer:
         )
         self.base_url = f"http://{self.connect_host}:{resolved_port}"
         env = os.environ.copy()
-        env["MINERU_API_OUTPUT_ROOT"] = str(output_root)
-        env["MINERU_API_DISABLE_ACCESS_LOG"] = "1"
+        env["MINEROS_API_OUTPUT_ROOT"] = str(output_root)
+        env["MINEROS_API_DISABLE_ACCESS_LOG"] = "1"
         if self.gpu is not None:
             env["CUDA_VISIBLE_DEVICES"] = str(self.gpu)
 
@@ -1287,7 +1287,7 @@ def build_sync_task_headers(task: RouterTaskRecord, request: Request) -> dict[st
 
 def create_app(settings: RouterSettings | None = None) -> FastAPI:
     resolved_settings = settings or RouterSettings.from_env()
-    enable_docs = env_flag_enabled("MINERU_API_ENABLE_FASTAPI_DOCS", default=True)
+    enable_docs = env_flag_enabled("MINEROS_API_ENABLE_FASTAPI_DOCS", default=True)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
@@ -1436,15 +1436,15 @@ def main(
         task_cleanup_interval_seconds=get_task_cleanup_interval_seconds(),
     )
     warn_if_router_preload_ignored(settings)
-    os.environ["MINERU_ROUTER_UPSTREAM_URLS_JSON"] = json.dumps(list(settings.upstream_urls))
-    os.environ["MINERU_ROUTER_LOCAL_GPUS"] = settings.local_gpus
-    os.environ["MINERU_ROUTER_WORKER_HOST"] = settings.worker_host
-    os.environ["MINERU_ROUTER_ENABLE_VLM_PRELOAD"] = (
+    os.environ["MINEROS_ROUTER_UPSTREAM_URLS_JSON"] = json.dumps(list(settings.upstream_urls))
+    os.environ["MINEROS_ROUTER_LOCAL_GPUS"] = settings.local_gpus
+    os.environ["MINEROS_ROUTER_WORKER_HOST"] = settings.worker_host
+    os.environ["MINEROS_ROUTER_ENABLE_VLM_PRELOAD"] = (
         "1" if settings.enable_vlm_preload else "0"
     )
-    os.environ["MINERU_ROUTER_WORKER_ARGS_JSON"] = json.dumps(list(settings.worker_extra_args))
+    os.environ["MINEROS_ROUTER_WORKER_ARGS_JSON"] = json.dumps(list(settings.worker_extra_args))
 
-    access_log = not env_flag_enabled("MINERU_API_DISABLE_ACCESS_LOG")
+    access_log = not env_flag_enabled("MINEROS_API_DISABLE_ACCESS_LOG")
     print(f"Start MinerU Router Service: http://{host}:{port}")
     print(f"API documentation: http://{host}:{port}/docs")
 

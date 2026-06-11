@@ -246,7 +246,7 @@ def finalize_middle_json(pdf_info_list, hybrid_pipeline_model, _ocr_enable, _vlm
     )
     merge_para_text_blocks(pdf_info_list, allow_cross_page=True)
 
-    table_enable = get_table_enable(os.getenv('MINERU_VLM_TABLE_ENABLE', 'True').lower() == 'true')
+    table_enable = get_table_enable(os.getenv('MINEROS_VLM_TABLE_ENABLE', 'True').lower() == 'true')
     if table_enable:
         cross_page_table_merge(pdf_info_list)
 

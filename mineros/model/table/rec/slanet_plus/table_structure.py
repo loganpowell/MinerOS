@@ -30,8 +30,8 @@ class TableStructurer:
         self.preprocess_op = TablePreprocess()
         self.batch_preprocess_op = BatchTablePreprocess()
 
-        config["intra_op_num_threads"] = get_op_num_threads("MINERU_INTRA_OP_NUM_THREADS")
-        config["inter_op_num_threads"] = get_op_num_threads("MINERU_INTER_OP_NUM_THREADS")
+        config["intra_op_num_threads"] = get_op_num_threads("MINEROS_INTRA_OP_NUM_THREADS")
+        config["inter_op_num_threads"] = get_op_num_threads("MINEROS_INTER_OP_NUM_THREADS")
 
         self.session = OrtInferSession(config)
 

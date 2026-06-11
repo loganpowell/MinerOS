@@ -279,7 +279,7 @@ def finalize_middle_json(pdf_info_list, lang=None, ocr_enable=False):
 
     _post_block_process(pdf_info_list)
 
-    if os.getenv('MINERU_DONOT_CLEAN_MEM') is None and len(pdf_info_list) >= 10:
+    if os.getenv('MINEROS_DONOT_CLEAN_MEM') is None and len(pdf_info_list) >= 10:
         clean_memory(get_device())
 
 

@@ -54,7 +54,7 @@ from mineros.cli.visualization import (
 )
 
 os.environ["TORCH_CUDNN_V8_API_DISABLED"] = "1"
-log_level = os.getenv("MINERU_LOG_LEVEL", "INFO").upper()
+log_level = os.getenv("MINEROS_LOG_LEVEL", "INFO").upper()
 
 
 @dataclass(frozen=True)

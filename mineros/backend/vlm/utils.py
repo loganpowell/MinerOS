@@ -181,7 +181,7 @@ def mod_kwargs_by_device_type(kwargs_or_args: dict | list, vllm_mode: str) -> di
     Returns:
         修改后的配置参数
     """
-    device_type = os.getenv("MINERU_VLLM_DEVICE", "")
+    device_type = os.getenv("MINEROS_VLLM_DEVICE", "")
     config = _get_device_config(device_type)
 
     if config is None:

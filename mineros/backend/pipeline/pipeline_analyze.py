@@ -331,7 +331,7 @@ def batch_image_analyze(
     # 检测torch的版本号
     import torch
     from packaging import version
-    device_type = os.getenv("MINERU_LMDEPLOY_DEVICE", "")
+    device_type = os.getenv("MINEROS_LMDEPLOY_DEVICE", "")
     if device_type.lower() in ["corex"]:
         enable_ocr_det_batch = False
     else:

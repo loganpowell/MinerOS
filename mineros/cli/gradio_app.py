@@ -25,7 +25,7 @@ os.environ["TORCH_CUDNN_V8_API_DISABLED"] = "1"
 _gradio_major_version = int(gr.__version__.split('.')[0])
 IS_GRADIO_6 = _gradio_major_version >= 6
 
-log_level = os.getenv("MINERU_LOG_LEVEL", "INFO").upper()
+log_level = os.getenv("MINEROS_LOG_LEVEL", "INFO").upper()
 logger.remove()  # 移除默认handler
 logger.add(sys.stderr, level=log_level)  # 添加新handler
 

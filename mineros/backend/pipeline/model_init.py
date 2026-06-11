@@ -19,13 +19,13 @@ from ...utils.models_download_utils import auto_download_and_get_model_root_path
 
 PIPELINE_MODEL_INIT_LOCK = threading.RLock()
 
-MFR_MODEL = os.getenv('MINERU_FORMULA_CH_SUPPORT', 'False')
+MFR_MODEL = os.getenv('MINEROS_FORMULA_CH_SUPPORT', 'False')
 if MFR_MODEL.lower() in ['true', '1', 'yes']:
     MFR_MODEL = "pp_formulanet_plus_m"
 elif MFR_MODEL.lower() in ['false', '0', 'no']:
     MFR_MODEL = "unimernet_small"
 else:
-    logger.warning(f"Invalid MINERU_FORMULA_CH_SUPPORT value: {MFR_MODEL}, set to default 'False'")
+    logger.warning(f"Invalid MINEROS_FORMULA_CH_SUPPORT value: {MFR_MODEL}, set to default 'False'")
     MFR_MODEL = "unimernet_small"
 
 
@@ -287,7 +287,7 @@ class HybridModelSingleton:
 def ocr_det_batch_setting():
     import torch
     from packaging import version
-    device_type = os.getenv("MINERU_LMDEPLOY_DEVICE", "")
+    device_type = os.getenv("MINEROS_LMDEPLOY_DEVICE", "")
     if device_type.lower() in ["corex"]:
         enable_ocr_det_batch = False
     else:

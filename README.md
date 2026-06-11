@@ -84,7 +84,7 @@ MINERU_VL_API_KEY=your-api-key
 MINERU_VL_MODEL_NAME=your-model-name
 
 # Required when server n_ctx is small (e.g., llama.cpp with 8192 context)
-MINERU_PROCESSING_WINDOW_SIZE=1
+MINEROS_PROCESSING_WINDOW_SIZE=1
 ```
 
 The `.env` file is loaded automatically via `python-dotenv` — no manual export needed.

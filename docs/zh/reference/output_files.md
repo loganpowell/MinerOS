@@ -1,8 +1,8 @@
-# MinerU 输出文件说明
+# MinerOS 输出文件说明
 
 ## 概览
 
-`mineru` 命令执行后，除了输出主要的 markdown 文件外，还会生成多个辅助文件用于调试、质检和进一步处理。这些文件包括：
+`mineros` 命令执行后，除了输出主要的 markdown 文件外，还会生成多个辅助文件用于调试、质检和进一步处理。这些文件包括：
 
 具体会生成哪些文件，取决于后端类型和输入文档类型。
 
@@ -116,7 +116,7 @@
 |--------|------|------|
 | `pdf_info` | `list[dict]` | 每一页的解析结果数组 |
 | `_backend` | `string` | 解析模式：`pipeline`、`vlm` 或 `office` |
-| `_version_name` | `string` | MinerU 版本号 |
+| `_version_name` | `string` | MinerOS 版本号 |
 
 ##### 页面信息结构 (pdf_info)
 
@@ -844,7 +844,7 @@ vlm 后端的 content_list.json 文件结构与 pipeline 后端类似，伴随�
 
 ## 总结
 
-以上文件为 MinerU 的完整输出结果，用户可根据需要选择合适的文件进行后续处理：
+以上文件为 MinerOS 的完整输出结果，用户可根据需要选择合适的文件进行后续处理：
 
 - **模型输出**(使用原始输出):
     * model.json

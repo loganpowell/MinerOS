@@ -133,7 +133,7 @@ def finalize_middle_json(pdf_info_list):
     build_para_blocks_from_preproc(pdf_info_list)
     merge_para_text_blocks(pdf_info_list, allow_cross_page=False)
 
-    table_enable = get_table_enable(os.getenv('MINERU_VLM_TABLE_ENABLE', 'True').lower() == 'true')
+    table_enable = get_table_enable(os.getenv('MINEROS_VLM_TABLE_ENABLE', 'True').lower() == 'true')
     if table_enable:
         cross_page_table_merge(pdf_info_list)
 

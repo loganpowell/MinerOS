@@ -9,7 +9,7 @@ from loguru import logger
 from mineros.utils.enum_class import ModelPath
 from mineros.utils.models_download_utils import auto_download_and_get_model_root_path
 
-MODEL_SOURCE_ENV_VAR = 'MINERU_MODEL_SOURCE'
+MODEL_SOURCE_ENV_VAR = 'MINEROS_MODEL_SOURCE'
 REMOTE_MODEL_SOURCES = ('huggingface', 'modelscope')
 
 
@@ -48,7 +48,7 @@ def download_and_modify_json(url, local_filename, modifications):
 def configure_model(model_dir, model_type):
     """配置模型"""
     json_url = 'https://gcore.jsdelivr.net/gh/opendatalab/MinerU@master/mineros.template.json'
-    config_file_name = os.getenv('MINERU_TOOLS_CONFIG_JSON', 'mineros.json')
+    config_file_name = os.getenv('MINEROS_TOOLS_CONFIG_JSON', 'mineros.json')
     home_dir = os.path.expanduser('~')
     config_file = os.path.join(home_dir, config_file_name)
 

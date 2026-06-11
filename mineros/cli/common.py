@@ -25,7 +25,7 @@ from mineros.backend.office.docx_analyze import office_docx_analyze
 from mineros.utils.pdfium_guard import rewrite_pdf_bytes_with_pdfium
 
 os.environ["TORCH_CUDNN_V8_API_DISABLED"] = "1"
-if os.getenv("MINERU_LMDEPLOY_DEVICE", "") == "maca":
+if os.getenv("MINEROS_LMDEPLOY_DEVICE", "") == "maca":
     import torch
 
     torch.backends.cudnn.enabled = False
@@ -832,8 +832,8 @@ def do_parse(
             if backend == "auto-engine":
                 backend = get_vlm_engine(inference_engine="auto", is_async=False)
 
-            os.environ["MINERU_VLM_FORMULA_ENABLE"] = str(formula_enable)
-            os.environ["MINERU_VLM_TABLE_ENABLE"] = str(table_enable)
+            os.environ["MINEROS_VLM_FORMULA_ENABLE"] = str(formula_enable)
+            os.environ["MINEROS_VLM_TABLE_ENABLE"] = str(table_enable)
 
             _process_vlm(
                 output_dir,
@@ -863,8 +863,8 @@ def do_parse(
             if backend == "auto-engine":
                 backend = get_vlm_engine(inference_engine="auto", is_async=False)
 
-            os.environ["MINERU_VLM_TABLE_ENABLE"] = str(table_enable)
-            os.environ["MINERU_VLM_FORMULA_ENABLE"] = "true"
+            os.environ["MINEROS_VLM_TABLE_ENABLE"] = str(table_enable)
+            os.environ["MINEROS_VLM_FORMULA_ENABLE"] = "true"
 
             _process_hybrid(
                 output_dir,
@@ -962,8 +962,8 @@ async def aio_do_parse(
             if backend == "auto-engine":
                 backend = get_vlm_engine(inference_engine="auto", is_async=True)
 
-            os.environ["MINERU_VLM_FORMULA_ENABLE"] = str(formula_enable)
-            os.environ["MINERU_VLM_TABLE_ENABLE"] = str(table_enable)
+            os.environ["MINEROS_VLM_FORMULA_ENABLE"] = str(formula_enable)
+            os.environ["MINEROS_VLM_TABLE_ENABLE"] = str(table_enable)
 
             await _async_process_vlm(
                 output_dir,
@@ -993,8 +993,8 @@ async def aio_do_parse(
             if backend == "auto-engine":
                 backend = get_vlm_engine(inference_engine="auto", is_async=True)
 
-            os.environ["MINERU_VLM_TABLE_ENABLE"] = str(table_enable)
-            os.environ["MINERU_VLM_FORMULA_ENABLE"] = "true"
+            os.environ["MINEROS_VLM_TABLE_ENABLE"] = str(table_enable)
+            os.environ["MINEROS_VLM_FORMULA_ENABLE"] = "true"
 
             await _async_process_hybrid(
                 output_dir,

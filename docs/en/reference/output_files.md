@@ -1,8 +1,8 @@
-# MinerU Output Files Documentation
+# MinerOS Output Files Documentation
 
 ## Overview
 
-After executing the `mineru` command, in addition to the main markdown file output, multiple auxiliary files are generated for debugging, quality inspection, and further processing. These files include:
+After executing the `mineros` command, in addition to the main markdown file output, multiple auxiliary files are generated for debugging, quality inspection, and further processing. These files include:
 
 The exact set of generated files depends on the backend and the input document type.
 
@@ -116,7 +116,7 @@ The following sections provide detailed descriptions of each file's purpose and 
 |------------|------|-------------|
 | `pdf_info` | `list[dict]` | Array of parsing results for each page |
 | `_backend` | `string` | Parsing mode: `pipeline`, `vlm`, or `office` |
-| `_version_name` | `string` | MinerU version number |
+| `_version_name` | `string` | MinerOS version number |
 
 ##### Page Information Structure (pdf_info)
 
@@ -718,7 +718,7 @@ Example: discarded blocks output
 
 ## Summary
 
-The above files constitute MinerU's complete output results. Users can choose appropriate files for subsequent processing based on their needs:
+The above files constitute MinerOS's complete output results. Users can choose appropriate files for subsequent processing based on their needs:
 
 - **Model outputs** (Use raw outputs):  
     * model.json

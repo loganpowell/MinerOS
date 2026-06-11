@@ -22,7 +22,7 @@ display_right_delimiter = delimiters['display']['right']
 inline_left_delimiter = delimiters['inline']['left']
 inline_right_delimiter = delimiters['inline']['right']
 
-OFFICE_STYLE_RENDER_MODE_ENV = 'MINERU_OFFICE_STYLE_RENDER_MODE'
+OFFICE_STYLE_RENDER_MODE_ENV = 'MINEROS_OFFICE_STYLE_RENDER_MODE'
 OFFICE_STYLE_RENDER_MODE_HTML = 'html'
 OFFICE_STYLE_RENDER_MODE_MARKDOWN = 'markdown'
 OFFICE_MARKDOWN_WRAPPER_STYLES = {'bold', 'italic', 'strikethrough'}

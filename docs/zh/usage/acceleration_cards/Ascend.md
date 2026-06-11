@@ -30,8 +30,8 @@ docker: 20.10.12
 
 
 ```bash
-wget https://gcore.jsdelivr.net/gh/opendatalab/MinerU@master/docker/china/npu.Dockerfile
-docker build --network=host -t mineru:npu-vllm-latest -f npu.Dockerfile .
+wget https://raw.githubusercontent.com/loganpowell/MinerOS/main/docker/china/npu.Dockerfile
+docker build --network=host -t mineros:npu-vllm-latest -f npu.Dockerfile .
 ```
 
 ### 2.2 使用 Dockerfile 构建镜像 （lmdeploy）
@@ -45,16 +45,16 @@ docker build --network=host -t mineru:npu-vllm-latest -f npu.Dockerfile .
 > 如果您的设备为Atlas A3系列或Atlas 300I Duo系列，请使用vllm版本的镜像。
 
 ```bash
-wget https://gcore.jsdelivr.net/gh/opendatalab/MinerU@master/docker/china/npu.Dockerfile
+wget https://raw.githubusercontent.com/loganpowell/MinerOS/main/docker/china/npu.Dockerfile
 # 将基础镜像从 vllm 切换为 lmdeploy
 sed -i '3s/^/# /' npu.Dockerfile && sed -i '5s/^# //' npu.Dockerfile
-docker build --network=host -t mineru:npu-lmdeploy-latest -f npu.Dockerfile .
+docker build --network=host -t mineros:npu-lmdeploy-latest -f npu.Dockerfile .
 ```
 
 ## 3. 启动 Docker 容器
 
 ```bash
-docker run -u root --name mineru_docker --privileged=true \
+docker run -u root --name mineros_docker --privileged=true \
     --ipc=host \
     --network=host \
     --device=/dev/davinci0 \
@@ -73,28 +73,28 @@ docker run -u root --name mineru_docker --privileged=true \
     -v /usr/local/bin/npu-smi:/usr/local/bin/npu-smi \
     -v /usr/local/Ascend/driver:/usr/local/Ascend/driver \
     -e VLLM_WORKER_MULTIPROC_METHOD=spawn \
-    -e MINERU_MODEL_SOURCE=local \
-    -e MINERU_LMDEPLOY_DEVICE=ascend \
-    -it mineru:npu-vllm-latest \
+    -e MINEROS_MODEL_SOURCE=local \
+    -e MINEROS_LMDEPLOY_DEVICE=ascend \
+    -it mineros:npu-vllm-latest \
     /bin/bash
 ```
 
 >[!TIP]
-> 请根据实际情况选择使用`vllm`或`lmdeploy`版本的镜像，如需使用lmdeploy，替换上述命令中的`mineru:npu-vllm-latest`为`mineru:npu-lmdeploy-latest`即可。
+> 请根据实际情况选择使用`vllm`或`lmdeploy`版本的镜像，如需使用lmdeploy，替换上述命令中的`mineros:npu-vllm-latest`为`mineros:npu-lmdeploy-latest`即可。
 
-执行该命令后，您将进入到Docker容器的交互式终端，您可以直接在容器内运行MinerU相关命令来使用MinerU的功能。
-您也可以直接通过替换`/bin/bash`为服务启动命令来启动MinerU服务，详细说明请参考[通过命令启动服务](https://opendatalab.github.io/MinerU/zh/usage/quick_usage/#apiwebuihttp-clientserver)。
+执行该命令后，您将进入到Docker容器的交互式终端，您可以直接在容器内运行MinerOS相关命令来使用MinerOS的功能。
+您也可以直接通过替换`/bin/bash`为服务启动命令来启动MinerOS服务，详细说明请参考[通过命令启动服务](https://loganpowell.github.io/MinerOS/zh/usage/quick_usage/#apiwebuihttp-clientserver)。
 
 >[!NOTE]
 > 由于310p加速卡不支持图模式与bf16精度，因此在使用该加速卡时，执行任意与`vllm`相关命令需追加`--enforce-eager --dtype float16`参数。
 > 例如:
 > ```bash
-> mineru-openai-server --port 30000 --enforce-eager --dtype float16
+> mineros-openai-server --port 30000 --enforce-eager --dtype float16
 > ```   
 
 ## 4. 注意事项
 
-不同环境下，MinerU对Ascend加速卡的支持情况如下表所示：
+不同环境下，MinerOS对Ascend加速卡的支持情况如下表所示：
 
 <table border="1">
   <thead>
@@ -109,7 +109,7 @@ docker run -u root --name mineru_docker --privileged=true \
   </thead>
   <tbody>
     <tr>
-      <td rowspan="3">命令行工具(mineru)</td>
+      <td rowspan="3">命令行工具(mineros)</td>
       <td>pipeline</td>
       <td>🟢</td>
       <td>🟢</td>
@@ -125,7 +125,7 @@ docker run -u root --name mineru_docker --privileged=true \
       <td>🟢</td>
     </tr>
     <tr>
-      <td rowspan="3">fastapi服务(mineru-api)</td>
+      <td rowspan="3">fastapi服务(mineros-api)</td>
       <td>pipeline</td>
       <td>🟢</td>
       <td>🟢</td>
@@ -141,7 +141,7 @@ docker run -u root --name mineru_docker --privileged=true \
       <td>🟢</td>
     </tr>
     <tr>
-      <td rowspan="3">gradio界面(mineru-gradio)</td>
+      <td rowspan="3">gradio界面(mineros-gradio)</td>
       <td>pipeline</td>
       <td>🟢</td>
       <td>🟢</td>
@@ -157,7 +157,7 @@ docker run -u root --name mineru_docker --privileged=true \
       <td>🟢</td>
     </tr>
     <tr>
-      <td colspan="2">openai-server服务（mineru-openai-server）</td>
+      <td colspan="2">openai-server服务（mineros-openai-server）</td>
       <td>🟢</td>
       <td>🟢</td>
     </tr>

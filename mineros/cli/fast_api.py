@@ -65,7 +65,7 @@ from mineros.utils.pdf_image_tools import shutdown_pdf_render_executor
 from mineros.version import __version__
 
 os.environ["TORCH_CUDNN_V8_API_DISABLED"] = "1"
-log_level = os.getenv("MINERU_LOG_LEVEL", "INFO").upper()
+log_level = os.getenv("MINEROS_LOG_LEVEL", "INFO").upper()
 logger.remove()
 logger.add(sys.stderr, level=log_level)
 
@@ -109,7 +109,7 @@ def is_main_multiprocessing_process() -> bool:
 
 
 def install_stdin_shutdown_watcher(server: uvicorn.Server) -> None:
-    if not env_flag_enabled("MINERU_API_SHUTDOWN_ON_STDIN_EOF"):
+    if not env_flag_enabled("MINEROS_API_SHUTDOWN_ON_STDIN_EOF"):
         return
 
     def _watch_stdin_for_eof() -> None:
@@ -225,8 +225,8 @@ async def lifespan(app: FastAPI):
 
 def create_app():
     # By default, the OpenAPI documentation endpoints (openapi_url, docs_url, redoc_url) are enabled.
-    # To disable the FastAPI docs and schema endpoints, set the environment variable MINERU_API_ENABLE_FASTAPI_DOCS=0.
-    enable_docs = env_flag_enabled("MINERU_API_ENABLE_FASTAPI_DOCS", default=True)
+    # To disable the FastAPI docs and schema endpoints, set the environment variable MINEROS_API_ENABLE_FASTAPI_DOCS=0.
+    enable_docs = env_flag_enabled("MINEROS_API_ENABLE_FASTAPI_DOCS", default=True)
     app = FastAPI(
         openapi_url="/openapi.json" if enable_docs else None,
         docs_url="/docs" if enable_docs else None,
@@ -253,7 +253,7 @@ def create_app():
     default_service_config, default_model_config = split_service_and_model_config(
         {
             "enable_vlm_preload": env_flag_enabled(
-                "MINERU_API_ENABLE_VLM_PRELOAD",
+                "MINEROS_API_ENABLE_VLM_PRELOAD",
                 default=False,
             )
         }
@@ -326,7 +326,7 @@ def get_max_concurrent_requests() -> int:
 
 def get_task_retention_seconds() -> int:
     return get_int_env(
-        "MINERU_API_TASK_RETENTION_SECONDS",
+        "MINEROS_API_TASK_RETENTION_SECONDS",
         DEFAULT_TASK_RETENTION_SECONDS,
         minimum=0,
     )
@@ -334,14 +334,14 @@ def get_task_retention_seconds() -> int:
 
 def get_task_cleanup_interval_seconds() -> int:
     return get_int_env(
-        "MINERU_API_TASK_CLEANUP_INTERVAL_SECONDS",
+        "MINEROS_API_TASK_CLEANUP_INTERVAL_SECONDS",
         DEFAULT_TASK_CLEANUP_INTERVAL_SECONDS,
         minimum=1,
     )
 
 
 def get_output_root() -> Path:
-    root = Path(os.getenv("MINERU_API_OUTPUT_ROOT", DEFAULT_OUTPUT_ROOT)).expanduser()
+    root = Path(os.getenv("MINEROS_API_OUTPUT_ROOT", DEFAULT_OUTPUT_ROOT)).expanduser()
     root.mkdir(parents=True, exist_ok=True)
     return root.resolve()
 
@@ -1524,10 +1524,10 @@ def main(ctx, host, port, reload, enable_vlm_preload, **kwargs):
 
     app.state.service_config = service_config
     app.state.config = model_config
-    os.environ["MINERU_API_ENABLE_VLM_PRELOAD"] = (
+    os.environ["MINEROS_API_ENABLE_VLM_PRELOAD"] = (
         "1" if service_config["enable_vlm_preload"] else "0"
     )
-    access_log = not env_flag_enabled("MINERU_API_DISABLE_ACCESS_LOG")
+    access_log = not env_flag_enabled("MINEROS_API_DISABLE_ACCESS_LOG")
 
     print(f"Start MinerU FastAPI Service: http://{host}:{port}")
     print(f"API documentation: http://{host}:{port}/docs")

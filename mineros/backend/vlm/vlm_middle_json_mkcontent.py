@@ -832,8 +832,8 @@ def union_make(pdf_info_dict: list,
                img_buket_path: str = '',
                ):
 
-    formula_enable = get_formula_enable(os.getenv('MINERU_VLM_FORMULA_ENABLE', 'True').lower() == 'true')
-    table_enable = get_table_enable(os.getenv('MINERU_VLM_TABLE_ENABLE', 'True').lower() == 'true')
+    formula_enable = get_formula_enable(os.getenv('MINEROS_VLM_FORMULA_ENABLE', 'True').lower() == 'true')
+    table_enable = get_table_enable(os.getenv('MINEROS_VLM_TABLE_ENABLE', 'True').lower() == 'true')
 
     output_content = []
     for page_info in pdf_info_dict:

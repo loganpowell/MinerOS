@@ -66,7 +66,7 @@ def get_float_env(name: str, default: float, minimum: float = 0.0) -> float:
 
 def get_local_api_startup_timeout_seconds(default: float = 300.0) -> float:
     return get_float_env(
-        "MINERU_LOCAL_API_STARTUP_TIMEOUT_SECONDS",
+        "MINEROS_LOCAL_API_STARTUP_TIMEOUT_SECONDS",
         default,
         minimum=1.0,
     )
@@ -232,16 +232,16 @@ class LocalAPIServer:
         remaining_cli_args = strip_local_api_network_args(self.extra_cli_args)
         self.base_url = f"http://127.0.0.1:{resolved_port}"
         env = os.environ.copy()
-        env["MINERU_API_OUTPUT_ROOT"] = str(self.output_root)
-        env["MINERU_API_MAX_CONCURRENT_REQUESTS"] = str(
+        env["MINEROS_API_OUTPUT_ROOT"] = str(self.output_root)
+        env["MINEROS_API_MAX_CONCURRENT_REQUESTS"] = str(
             read_max_concurrent_requests(default=DEFAULT_MAX_CONCURRENT_REQUESTS)
         )
-        env["MINERU_API_DISABLE_ACCESS_LOG"] = "1"
+        env["MINEROS_API_DISABLE_ACCESS_LOG"] = "1"
         if self._use_stdin_shutdown_watcher:
-            env["MINERU_API_SHUTDOWN_ON_STDIN_EOF"] = "1"
+            env["MINEROS_API_SHUTDOWN_ON_STDIN_EOF"] = "1"
             stdin_target = subprocess.PIPE
         else:
-            env.pop("MINERU_API_SHUTDOWN_ON_STDIN_EOF", None)
+            env.pop("MINEROS_API_SHUTDOWN_ON_STDIN_EOF", None)
             stdin_target = subprocess.DEVNULL
         self.output_root.mkdir(parents=True, exist_ok=True)
 

@@ -472,25 +472,25 @@ def get_batch_ratio(device):
     """
     # 1. 优先尝试从环境变量获取
     """
-    c/s架构分离部署时，建议通过设置环境变量 MINERU_HYBRID_BATCH_RATIO 来指定 batch ratio
+    c/s架构分离部署时，建议通过设置环境变量 MINEROS_HYBRID_BATCH_RATIO 来指定 batch ratio
     建议的设置值如如下，以下配置值已考虑一定的冗余，单卡多终端部署时为了保证稳定性，可以额外保留一个client端的显存作为整体冗余
-    单个client端显存大小 | MINERU_HYBRID_BATCH_RATIO
+    单个client端显存大小 | MINEROS_HYBRID_BATCH_RATIO
     ------------------|------------------------
     <= 6   GB         | 8
     <= 4   GB         | 4
     <= 3   GB         | 2
     <= 2   GB         | 1
     例如：
-    export MINERU_HYBRID_BATCH_RATIO=4
+    export MINEROS_HYBRID_BATCH_RATIO=4
     """
-    env_val = os.getenv("MINERU_HYBRID_BATCH_RATIO")
+    env_val = os.getenv("MINEROS_HYBRID_BATCH_RATIO")
     if env_val:
         try:
             batch_ratio = int(env_val)
             logger.info(f"hybrid batch ratio (from env): {batch_ratio}")
             return batch_ratio
         except ValueError as e:
-            logger.warning(f"Invalid MINERU_HYBRID_BATCH_RATIO value: {env_val}, switching to auto mode. Error: {e}")
+            logger.warning(f"Invalid MINEROS_HYBRID_BATCH_RATIO value: {env_val}, switching to auto mode. Error: {e}")
 
     # 2. 根据显存自动推断
     """
@@ -514,11 +514,11 @@ def get_batch_ratio(device):
 
 def _should_enable_vlm_ocr(ocr_enable: bool, language: str, inline_formula_enable: bool) -> bool:
     """判断是否启用VLM OCR"""
-    force_enable = os.getenv("MINERU_FORCE_VLM_OCR_ENABLE", "0").lower() in ("1", "true", "yes")
+    force_enable = os.getenv("MINEROS_FORCE_VLM_OCR_ENABLE", "0").lower() in ("1", "true", "yes")
     if force_enable:
         return True
 
-    force_pipeline = os.getenv("MINERU_HYBRID_FORCE_PIPELINE_ENABLE", "0").lower() in ("1", "true", "yes")
+    force_pipeline = os.getenv("MINEROS_HYBRID_FORCE_PIPELINE_ENABLE", "0").lower() in ("1", "true", "yes")
     return (
             ocr_enable
             and language in ["ch", "en"]
