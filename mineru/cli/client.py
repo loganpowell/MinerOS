@@ -3,6 +3,15 @@ import asyncio
 import os
 import sys
 import threading
+
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(
+        override=False
+    )  # .env values only set vars not already in the environment
+except ImportError:
+    pass
 from concurrent.futures import Future, ProcessPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
@@ -46,6 +55,7 @@ from mineru.cli.visualization import (
 
 os.environ["TORCH_CUDNN_V8_API_DISABLED"] = "1"
 log_level = os.getenv("MINERU_LOG_LEVEL", "INFO").upper()
+
 
 @dataclass(frozen=True)
 class InputDocument:
@@ -217,10 +227,7 @@ class LiveTaskStatusRenderer:
             self._task_states.values(),
             key=lambda state: (state.task_index, state.task_id),
         )
-        return [
-            self._build_render_line_locked(state)
-            for state in states
-        ]
+        return [self._build_render_line_locked(state) for state in states]
 
     @staticmethod
     def _build_render_line_locked(state: LiveTaskStatusState) -> str:
@@ -228,7 +235,9 @@ class LiveTaskStatusRenderer:
         if state.status == "pending" and state.queued_ahead is not None:
             parts.append(f"ahead={state.queued_ahead}")
         parts.append(f"task_id={state.task_id}")
-        return f"{LiveTaskStatusRenderer._build_bar(state.frame_step)} {' | '.join(parts)}"
+        return (
+            f"{LiveTaskStatusRenderer._build_bar(state.frame_step)} {' | '.join(parts)}"
+        )
 
     @classmethod
     def _build_bar(cls, frame_step: int) -> str:
@@ -261,6 +270,7 @@ logger.add(_stderr_sink, level=log_level)
 
 def build_http_timeout() -> httpx.Timeout:
     return _api_client.build_http_timeout()
+
 
 def find_free_port() -> int:
     return _api_client.find_free_port()
@@ -608,7 +618,9 @@ def plan_tasks(
     if backend == "pipeline":
         return plan_pipeline_tasks(documents, processing_window_size)
     return [
-        PlannedTask(index=index, documents=[document], total_pages=document.effective_pages)
+        PlannedTask(
+            index=index, documents=[document], total_pages=document.effective_pages
+        )
         for index, document in enumerate(documents, start=1)
     ]
 
@@ -743,7 +755,9 @@ async def execute_planned_tasks(
                 failures.append(
                     TaskFailure(
                         task_index=planned_task.index,
-                        document_stems=tuple(doc.stem for doc in planned_task.documents),
+                        document_stems=tuple(
+                            doc.stem for doc in planned_task.documents
+                        ),
                         message=str(exc),
                     )
                 )
@@ -872,7 +886,9 @@ async def run_orchestrated_cli(
                 local_server = LocalAPIServer(extra_cli_args=extra_cli_args)
                 base_url = local_server.start()
                 logger.info(f"Started local mineru-api at {base_url}")
-                server_health = await wait_for_local_api_ready(http_client, local_server)
+                server_health = await wait_for_local_api_ready(
+                    http_client, local_server
+                )
                 effective_max_concurrent_requests = (
                     server_health.max_concurrent_requests
                 )
@@ -894,9 +910,11 @@ async def run_orchestrated_cli(
             planned_tasks = plan_tasks(
                 documents=documents,
                 backend=backend,
-                processing_window_size=server_health.processing_window_size
-                if backend == "pipeline"
-                else DEFAULT_PROCESSING_WINDOW_SIZE,
+                processing_window_size=(
+                    server_health.processing_window_size
+                    if backend == "pipeline"
+                    else DEFAULT_PROCESSING_WINDOW_SIZE
+                ),
             )
             progress = build_task_execution_progress(planned_tasks)
             concurrency = resolve_submit_concurrency(
@@ -951,9 +969,13 @@ async def run_orchestrated_cli(
                         _stderr_sink.set_renderer(None)
 
 
-@click.command(context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
+@click.command(
+    context_settings=dict(ignore_unknown_options=True, allow_extra_args=True)
+)
 @click.pass_context
-@click.version_option(__version__, "--version", "-v", help="display the version and exit")
+@click.version_option(
+    __version__, "--version", "-v", help="display the version and exit"
+)
 @click.option(
     "-p",
     "--path",

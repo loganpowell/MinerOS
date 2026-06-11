@@ -1,6 +1,6 @@
 # Copyright (c) Opendatalab. All rights reserved.
 
-CONSERVATIVE_MARKDOWN_SPECIAL_CHARS = ("*", "_", "`", "~", "$")
+CONSERVATIVE_MARKDOWN_SPECIAL_CHARS = ("*", "_", "`", "$")
 
 
 def escape_conservative_markdown_text(content: str) -> str:
