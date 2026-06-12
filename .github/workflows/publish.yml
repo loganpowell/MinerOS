@@ -14,6 +14,12 @@ jobs:
             - name: Install uv
               uses: astral-sh/setup-uv@v4
 
+            - name: Set version from tag
+              run: |
+                  VERSION="${GITHUB_REF_NAME#v}"
+                  echo "__version__ = \"$VERSION\"" > mineros/version.py
+                  echo "Building version $VERSION"
+
             - name: Build
               run: uv build
 
