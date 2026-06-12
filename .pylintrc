@@ -26,6 +26,19 @@ disable=
     E1120,  # no-value-for-parameter (false positive on @click.command functions)
     # Optional heavy dependencies not installed in dev venv
     E1101,  # c-extension-no-member (torch, cv2, etc.)
+    # Intentional broad catches at system/library boundaries (PDF parsers,
+    # ML inference, API endpoints) where unknown third-party exceptions must
+    # not crash an entire batch job
+    W0718,  # broad-exception-caught
+    # Enum classes and dataclass-style classes legitimately have few methods
+    R0903,  # too-few-public-methods
+    # Optional-backend availability probes use `import x` then discard — noqa
+    # covers ruff/flake8 but not pylint
+    W0611,  # unused-import (optional backend availability probes)
+    # Pylint false positive: `y, x = stack.pop(), stack.pop()` is valid Python
+    E0633,  # unpacking-non-sequence
+    # Too-many-return-statements is a style preference, not a bug
+    R0911,  # too-many-return-statements
 
 [FORMAT]
 max-line-length=120
