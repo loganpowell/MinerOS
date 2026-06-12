@@ -73,10 +73,10 @@ vlm = [
     "accelerate>=1.5.1",
 ]
 vllm = [
-    "vllm>=0.10.1.1,<0.12",
+    "vllm>=0.10.1.1,<1",
 ]
 lmdeploy = [
-    "lmdeploy>=0.10.2,<0.12",
+    "lmdeploy>=0.10.2,<1",
 ]
 mlx = [
     "mlx-vlm>=0.3.3,<0.4",
