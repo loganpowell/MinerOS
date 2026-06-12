@@ -75,7 +75,7 @@ def __is_list_or_index_block(block):
         line_height = first_line['bbox'][3] - first_line['bbox'][1]
         block_weight = block['bbox_fs'][2] - block['bbox_fs'][0]
         block_height = block['bbox_fs'][3] - block['bbox_fs'][1]
-        page_weight, page_height = block['page_size']
+        page_weight, _ = block['page_size']
 
         left_close_num = 0
         left_not_close_num = 0

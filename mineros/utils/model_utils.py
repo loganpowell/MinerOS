@@ -152,7 +152,7 @@ def get_res_list_from_layout_res(layout_res, overlap_threshold=0.8):
     single_page_mfdetrec_res = []
 
     # Categorize regions
-    for i, res in enumerate(layout_res):
+    for _, res in enumerate(layout_res):
         label = res.get("label")
 
         if label in ["display_formula", "inline_formula"]:

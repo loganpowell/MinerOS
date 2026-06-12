@@ -1,0 +1,31 @@
+[MASTER]
+# Ignore vendored / generated model code that we don't own
+ignore=pytorchocr
+
+[MESSAGES CONTROL]
+disable=
+    # Style / docstring conventions — handled by ruff
+    C0114,  # missing-module-docstring
+    C0115,  # missing-class-docstring
+    C0116,  # missing-function-docstring
+    C0103,  # invalid-name (single-letter vars, etc.)
+    C0301,  # line-too-long (ignored in ruff config too)
+    C0411,  # wrong-import-order
+    C0415,  # import-outside-toplevel (intentional for optional backends)
+    # Complexity refactor suggestions — noise for this codebase
+    R0801,  # duplicate-code
+    R0902,  # too-many-instance-attributes
+    R0912,  # too-many-branches
+    R0913,  # too-many-arguments
+    R0914,  # too-many-locals
+    R0915,  # too-many-statements
+    R0917,  # too-many-positional-arguments
+    R1702,  # too-many-nested-blocks
+    R1705,  # no-else-return
+    # Click CLI entry points — pylint can't see Click's decorator-injected args
+    E1120,  # no-value-for-parameter (false positive on @click.command functions)
+    # Optional heavy dependencies not installed in dev venv
+    E1101,  # c-extension-no-member (torch, cv2, etc.)
+
+[FORMAT]
+max-line-length=120

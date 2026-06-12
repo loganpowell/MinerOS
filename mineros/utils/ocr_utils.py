@@ -313,7 +313,7 @@ def merge_det_boxes(dt_boxes):
 
 
 def get_adjusted_mfdetrec_res(single_page_mfdetrec_res, useful_list):
-    paste_x, paste_y, xmin, ymin, xmax, ymax, new_width, new_height = useful_list
+    paste_x, paste_y, xmin, ymin, _xmax, _ymax, new_width, new_height = useful_list
     # Adjust the coordinates of the formula area
     adjusted_mfdetrec_res = []
     for mf_res in single_page_mfdetrec_res:
@@ -340,7 +340,7 @@ def get_ocr_result_list(
     bgr_image,
     lang,
 ):
-    paste_x, paste_y, xmin, ymin, xmax, ymax, new_width, new_height = useful_list
+    paste_x, paste_y, xmin, ymin, _xmax, _ymax, new_width, new_height = useful_list
     ocr_result_list = []
     ori_im = bgr_image.copy()
     for box_ocr_res in ocr_res:

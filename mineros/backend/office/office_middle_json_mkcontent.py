@@ -1012,8 +1012,8 @@ def get_body_data(para_block):
 def merge_para_with_text_v2(para_block):
     _visible_styles = {"underline", "strikethrough"}
     para_content = []
-    for i, line in enumerate(para_block["lines"]):
-        for j, span in enumerate(line["spans"]):
+    for _, line in enumerate(para_block["lines"]):
+        for _, span in enumerate(line["spans"]):
             content = span.get("content", "")
             span_style = span.get("style", [])
             has_visible_style = bool(

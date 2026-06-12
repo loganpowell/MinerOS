@@ -14,7 +14,7 @@ def parse_s3path(s3path: str):
     # return p.bucket, p.key
     s3path = remove_non_official_s3_args(s3path).strip()
     if s3path.startswith(('s3://', 's3a://')):
-        prefix, path = s3path.split('://', 1)
+        _, path = s3path.split('://', 1)
         bucket_name, key = path.split('/', 1)
         return bucket_name, key
     elif s3path.startswith('/'):

@@ -357,7 +357,7 @@ def _process_pipeline(
     image_writer_list = []
     md_writer_list = []
     local_output_info = []
-    for idx, pdf_bytes in enumerate(pdf_bytes_list):
+    for idx, _ in enumerate(pdf_bytes_list):
         pdf_file_name = pdf_file_names[idx]
         local_image_dir, local_md_dir = prepare_env(
             output_dir, pdf_file_name, parse_method

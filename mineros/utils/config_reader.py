@@ -54,7 +54,7 @@ def get_s3_config_dict(path: str):
 
 
 def get_bucket_name(path):
-    bucket, key = parse_bucket_key(path)
+    bucket, _ = parse_bucket_key(path)
     return bucket
 
 

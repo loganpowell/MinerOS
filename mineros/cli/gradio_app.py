@@ -421,7 +421,7 @@ def compress_directory_to_zip(directory_path, output_zip_path):
         with zipfile.ZipFile(output_zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
 
             # 遍历目录中的所有文件和子目录
-            for root, dirs, files in os.walk(directory_path):
+            for root, _, files in os.walk(directory_path):
                 for file in files:
                     # 构建完整的文件路径
                     file_path = os.path.join(root, file)
