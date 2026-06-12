@@ -41,7 +41,7 @@ def get_s3_config(bucket_name: str):
         access_key, secret_key, storage_endpoint = bucket_info[bucket_name]
 
     if access_key is None or secret_key is None or storage_endpoint is None:
-        raise Exception(f'ak, sk or endpoint not found in {CONFIG_FILE_NAME}')
+        raise ValueError(f'ak, sk or endpoint not found in {CONFIG_FILE_NAME}')
 
     # logger.info(f"get_s3_config: ak={access_key}, sk={secret_key}, endpoint={storage_endpoint}")
 

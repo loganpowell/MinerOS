@@ -29,7 +29,7 @@ def __replace_unicode(text: str):
     return re.sub('|'.join(map(re.escape, ligatures.keys())), lambda m: ligatures[m.group()], text)
 
 
-"""pdf_text dict方案 char级别"""
+# pdf_text dict方案 char级别
 def txt_spans_extract(pdf_page, spans, pil_img, scale, all_bboxes, all_discarded_blocks):
     page_char_count = None
     try:
@@ -93,7 +93,7 @@ def txt_spans_extract(pdf_page, spans, pil_img, scale, all_bboxes, all_discarded
                         unuseful_spans.append(span)
                     break
 
-    """垂直的span框直接用line进行填充"""
+    # 垂直的span框直接用line进行填充
     if len(vertical_spans) > 0:
         for pdfium_line in page_all_lines:
             for span in vertical_spans:
@@ -106,7 +106,7 @@ def txt_spans_extract(pdf_page, spans, pil_img, scale, all_bboxes, all_discarded
             if len(span['content']) == 0:
                 spans.remove(span)
 
-    """水平的span框先用char填充，再用ocr填充空的span框"""
+    # 水平的span框先用char填充，再用ocr填充空的span框
     new_spans = []
 
     for span in useful_spans + unuseful_spans:

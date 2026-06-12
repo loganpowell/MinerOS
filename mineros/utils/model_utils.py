@@ -39,6 +39,7 @@ def _get_bbox(item):
     if bbox is not None:
         xmin, ymin, xmax, ymax = bbox
         return float(xmin), float(ymin), float(xmax), float(ymax)
+    return None
 
 
 def _get_int_bbox(item):

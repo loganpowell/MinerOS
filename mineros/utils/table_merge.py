@@ -173,9 +173,7 @@ def _build_front_cache(rows, max_header_rows: int = MAX_HEADER_ROWS) -> tuple[li
         _build_row_signature(front_rows[idx], front_scan.row_effective_cols[idx])
         for idx in range(min(len(front_rows), max_header_rows))
     ]
-    front_first_data_row_metrics = {
-        idx: metrics for idx, metrics in enumerate(front_scan.row_metrics)
-    }
+    front_first_data_row_metrics = dict(enumerate(front_scan.row_metrics))
     return front_header_info, front_first_data_row_metrics
 
 
@@ -259,10 +257,7 @@ def build_table_occupied_matrix(soup):
         return {}
 
     scan = _scan_rows(rows)
-    return {
-        row_idx: effective_cols
-        for row_idx, effective_cols in enumerate(scan.row_effective_cols)
-    }
+    return dict(enumerate(scan.row_effective_cols))
 
 
 def calculate_row_effective_columns(soup, row_idx):

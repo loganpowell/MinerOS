@@ -58,9 +58,11 @@ def tie_up_category_by_index(
 
     # 如果没有提供自定义提取函数，使用默认函数
     if extract_subject_func is None:
-        extract_subject_func = lambda x: x  # noqa: E731
+        def extract_subject_func(x):  # noqa: E306
+            return x
     if extract_object_func is None:
-        extract_object_func = lambda x: x  # noqa: E731
+        def extract_object_func(x):  # noqa: E306
+            return x
 
     # 初始化结果字典，key为主体索引，value为关联信息
     result_dict = {}
