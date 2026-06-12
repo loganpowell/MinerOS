@@ -7,6 +7,7 @@ import time
 import json
 import threading
 from contextlib import asynccontextmanager, contextmanager
+from typing import Literal, cast
 
 import pypdfium2 as pdfium
 from loguru import logger
@@ -107,6 +108,8 @@ class ModelSingleton:
                     if not mlx_supported:
                         raise EnvironmentError("mlx-engine backend is only supported on macOS 13.5+ with Apple Silicon.")
                     from mineru_vl_utils.mlx_compat import load_mlx_model
+                    if model_path is None:
+                        raise ValueError("model_path is required for mlx-engine backend")
                     model, processor = load_mlx_model(model_path)
                 else:
                     if os.getenv('OMP_NUM_THREADS') is None:
@@ -114,11 +117,11 @@ class ModelSingleton:
 
                     if backend == "vllm-engine":
                         try:
-                            import vllm
+                            import vllm  # type: ignore[import-untyped]
                         except ImportError:
                             raise ImportError("Please install vllm to use the vllm-engine backend.")
 
-                        kwargs = mod_kwargs_by_device_type(kwargs, vllm_mode="sync_engine")
+                        kwargs = dict(mod_kwargs_by_device_type(kwargs, vllm_mode="sync_engine"))  # type: ignore[arg-type]
 
                         if "compilation_config" in kwargs:
                             if isinstance(kwargs["compilation_config"], str):
@@ -139,13 +142,13 @@ class ModelSingleton:
                         vllm_llm = vllm.LLM(**kwargs)
                     elif backend == "vllm-async-engine":
                         try:
-                            from vllm.engine.arg_utils import AsyncEngineArgs
-                            from vllm.v1.engine.async_llm import AsyncLLM
-                            from vllm.config import CompilationConfig
+                            from vllm.engine.arg_utils import AsyncEngineArgs  # type: ignore[import-untyped]
+                            from vllm.v1.engine.async_llm import AsyncLLM  # type: ignore[import-untyped]
+                            from vllm.config import CompilationConfig  # type: ignore[import-untyped]
                         except ImportError:
                             raise ImportError("Please install vllm to use the vllm-async-engine backend.")
 
-                        kwargs = mod_kwargs_by_device_type(kwargs, vllm_mode="async_engine")
+                        kwargs = dict(mod_kwargs_by_device_type(kwargs, vllm_mode="async_engine"))  # type: ignore[arg-type]
 
                         if "compilation_config" in kwargs:
                             if isinstance(kwargs["compilation_config"], dict):
@@ -171,8 +174,8 @@ class ModelSingleton:
                         vllm_async_llm = AsyncLLM.from_engine_args(AsyncEngineArgs(**kwargs))
                     elif backend == "lmdeploy-engine":
                         try:
-                            from lmdeploy import PytorchEngineConfig, TurbomindEngineConfig
-                            from lmdeploy.serve.vl_async_engine import VLAsyncEngine
+                            from lmdeploy import PytorchEngineConfig, TurbomindEngineConfig  # type: ignore[import-untyped]
+                            from lmdeploy.serve.vl_async_engine import VLAsyncEngine  # type: ignore[import-untyped]
                         except ImportError:
                             raise ImportError("Please install lmdeploy to use the lmdeploy-engine backend.")
                         if "cache_max_entry_count" not in kwargs:
@@ -205,7 +208,7 @@ class ModelSingleton:
                             raise ValueError(f"Unsupported lmdeploy backend: {lm_backend}")
 
                         log_level = 'ERROR'
-                        from lmdeploy.utils import get_logger
+                        from lmdeploy.utils import get_logger  # type: ignore[import-untyped]
                         lm_logger = get_logger('lmdeploy')
                         lm_logger.setLevel(log_level)
                         if os.getenv('TM_LOG_LEVEL') is None:
@@ -216,8 +219,9 @@ class ModelSingleton:
                             backend=lm_backend,
                             backend_config=backend_config,
                         )
+                _backend = cast(Literal["http-client", "transformers", "mlx-engine", "lmdeploy-engine", "vllm-engine", "vllm-async-engine"], backend)
                 predictor = MinerUClient(
-                    backend=backend,
+                    backend=_backend,
                     model=model,
                     processor=processor,
                     lmdeploy_engine=lmdeploy_engine,
@@ -233,7 +237,7 @@ class ModelSingleton:
                     enable_table_formula_eq_wrap=True,
                     image_analysis=True,
                 )
-                predictor._mineru_runtime_handles = {
+                predictor._mineru_runtime_handles = {  # type: ignore[attr-defined]
                     "backend": backend,
                     "model": model,
                     "processor": processor,
@@ -364,7 +368,7 @@ def _maybe_enable_serial_execution(
     if _predictor_uses_mlx(predictor, backend) and not hasattr(
         predictor, "_mineru_execution_lock"
     ):
-        predictor._mineru_execution_lock = threading.Lock()
+        predictor._mineru_execution_lock = threading.Lock()  # type: ignore[attr-defined]
     return predictor
 
 
@@ -432,12 +436,22 @@ def doc_analyze(
             f'window_size={configured_window_size}, total_windows={total_windows}'
         )
 
+        # Pending windows to process: list of (window_start, window_end) page indices.
+        # We start with the configured windows and bisect any that exceed the server's
+        # context limit.
+        pending_windows = [
+            (ws, min(page_count - 1, ws + effective_window_size - 1))
+            for ws in range(0, page_count, effective_window_size or 1)
+        ]
+
         infer_start = time.time()
         progress_bar = None
         last_append_end_time = None
+        window_index = 0
         try:
-            for window_index, window_start in enumerate(range(0, page_count, effective_window_size or 1)):
-                window_end = min(page_count - 1, window_start + effective_window_size - 1)
+            while pending_windows:
+                window_start, window_end = pending_windows.pop(0)
+                window_index += 1
                 images_list = load_images_from_pdf_doc(
                     pdf_doc,
                     start_page_id=window_start,
@@ -448,12 +462,26 @@ def doc_analyze(
                 try:
                     images_pil_list = [image_dict["img_pil"] for image_dict in images_list]
                     logger.info(
-                        f'VLM processing window {window_index + 1}/{total_windows}: '
+                        f'VLM processing window {window_index}/{window_index + len(pending_windows)}: '
                         f'pages {window_start + 1}-{window_end + 1}/{page_count} '
                         f'({len(images_pil_list)} pages)'
                     )
-                    with predictor_execution_guard(predictor):
-                        window_results = predictor.batch_two_step_extract(images=images_pil_list)
+                    try:
+                        with predictor_execution_guard(predictor):
+                            window_results = predictor.batch_two_step_extract(images=images_pil_list)
+                    except Exception as exc:
+                        exc_str = str(exc).lower()
+                        window_size = window_end - window_start + 1
+                        if window_size > 1 and "context size" in exc_str:
+                            mid = window_start + window_size // 2
+                            logger.warning(
+                                f'Context size exceeded for pages {window_start + 1}-{window_end + 1} '
+                                f'({window_size} pages). Splitting into two halves and retrying.'
+                            )
+                            pending_windows.insert(0, (mid, window_end))
+                            pending_windows.insert(0, (window_start, mid - 1))
+                            continue
+                        raise
                     results.extend(window_results)
                     if progress_bar is None:
                         progress_bar = tqdm(total=page_count, desc="Processing pages")
@@ -524,12 +552,22 @@ async def aio_doc_analyze(
             f'window_size={configured_window_size}, total_windows={total_windows}'
         )
 
+        # Pending windows to process: list of (window_start, window_end) page indices.
+        # We start with the configured windows and bisect any that exceed the server's
+        # context limit.
+        pending_windows = [
+            (ws, min(page_count - 1, ws + effective_window_size - 1))
+            for ws in range(0, page_count, effective_window_size or 1)
+        ]
+
         infer_start = time.time()
         progress_bar = None
         last_append_end_time = None
+        window_index = 0
         try:
-            for window_index, window_start in enumerate(range(0, page_count, effective_window_size or 1)):
-                window_end = min(page_count - 1, window_start + effective_window_size - 1)
+            while pending_windows:
+                window_start, window_end = pending_windows.pop(0)
+                window_index += 1
                 images_list = load_images_from_pdf_doc(
                     pdf_doc,
                     start_page_id=window_start,
@@ -540,12 +578,28 @@ async def aio_doc_analyze(
                 try:
                     images_pil_list = [image_dict["img_pil"] for image_dict in images_list]
                     logger.info(
-                        f'VLM processing window {window_index + 1}/{total_windows}: '
+                        f'VLM processing window {window_index}/{window_index + len(pending_windows)}: '
                         f'pages {window_start + 1}-{window_end + 1}/{page_count} '
                         f'({len(images_pil_list)} pages)'
                     )
-                    async with aio_predictor_execution_guard(predictor):
-                        window_results = await predictor.aio_batch_two_step_extract(images=images_pil_list)
+                    try:
+                        async with aio_predictor_execution_guard(predictor):
+                            window_results = await predictor.aio_batch_two_step_extract(images=images_pil_list)
+                    except Exception as exc:
+                        # If the server reports a context-size overflow and the window
+                        # has more than one page, bisect it and retry the two halves.
+                        exc_str = str(exc).lower()
+                        window_size = window_end - window_start + 1
+                        if window_size > 1 and "context size" in exc_str:
+                            mid = window_start + window_size // 2
+                            logger.warning(
+                                f'Context size exceeded for pages {window_start + 1}-{window_end + 1} '
+                                f'({window_size} pages). Splitting into two halves and retrying.'
+                            )
+                            pending_windows.insert(0, (mid, window_end))
+                            pending_windows.insert(0, (window_start, mid - 1))
+                            continue
+                        raise
                     results.extend(window_results)
                     if progress_bar is None:
                         progress_bar = tqdm(total=page_count, desc="Processing pages")
