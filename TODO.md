@@ -14,7 +14,7 @@
   - Same availability check and error message as PPTX
   - Integration point: `mineros/cli/common.py`, `_process_office_doc()`
 
-- [ ] **DOCX inline image-tables extraction via VLM**
+- [x] **DOCX inline image-tables extraction via VLM**
   - Currently `_handle_pictures()` in `docx_converter.py` emits opaque `IMAGE` blocks for any embedded image — including tables pasted as screenshots
   - Route DOCX image blocks through the VLM (same `vlm-http-client` call used for PDF pages) to attempt table extraction
   - Replace the `IMAGE` block with a `TABLE` block (HTML content) when the VLM returns structured table output; fall back to the original image if it doesn't
