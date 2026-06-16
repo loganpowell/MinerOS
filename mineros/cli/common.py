@@ -750,12 +750,17 @@ def _process_office_doc(
                 infer_result,
                 process_mode="docx",
             )
-        elif file_suffix in pptx_suffixes:
-            need_remove_index.append(i)
-            logger.warning(f"Currently, PPTX files are not supported: {pdf_file_name}")
-        elif file_suffix in xlsx_suffixes:
-            need_remove_index.append(i)
-            logger.warning(f"Currently, XLSX files are not supported: {pdf_file_name}")
+        elif file_suffix in pptx_suffixes + xlsx_suffixes:
+            try:
+                from mineros.utils.libreoffice_utils import office_to_pdf_bytes
+
+                pdf_bytes_list[i] = office_to_pdf_bytes(file_bytes, file_suffix)
+                logger.info(
+                    f"Converted .{file_suffix.upper()} to PDF for VLM processing: {pdf_file_name}"
+                )
+            except RuntimeError as exc:
+                need_remove_index.append(i)
+                logger.error(str(exc))
 
     return need_remove_index
 

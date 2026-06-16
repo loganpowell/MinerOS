@@ -33,11 +33,16 @@ def find_libreoffice() -> str | None:
 
 
 def _office_to_pdf_via_http(file_bytes: bytes, source_suffix: str, server_url: str) -> bytes:
-    """Convert via a running unoserver HTTP endpoint."""
+    """Convert via a libreofficedocker/libreoffice-unoserver REST endpoint.
+
+    API: POST /request  multipart (file=<bytes>, convert-to=pdf) → PDF bytes
+    Default port: 2004
+    Image: libreofficedocker/libreoffice-unoserver
+    """
     resp = requests.post(
-        server_url.rstrip("/") + "/",
+        server_url.rstrip("/") + "/request",
         files={"file": (f"input.{source_suffix}", file_bytes)},
-        data={"convert_to": "pdf"},
+        data={"convert-to": "pdf"},
         timeout=120,
     )
     resp.raise_for_status()
