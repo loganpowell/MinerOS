@@ -182,3 +182,10 @@ Here are the environment variables and their descriptions:
 
 - `MINERU_VL_API_KEY`:
     * Used to specify the API Key for the vlm/hybrid backend, enabling authentication on the remote openai-server.
+
+- `MINEROS_LO_SERVER`:
+    * Base URL of a running [unoserver](https://github.com/unoserver/unoserver) HTTP instance used to convert PPTX and XLSX files to PDF before VLM processing.
+    * Example: `http://127.0.0.1:2003`
+    * When set, MinerOS POSTs the source file to `{MINEROS_LO_SERVER}/` and receives PDF bytes back, which then flow through the normal VLM pipeline.
+    * When not set, MinerOS falls back to a locally installed `libreoffice` / `soffice` binary.
+    * Start a local server with `mineros-lo-server` (requires `pip install 'mineros[lo]'` and LibreOffice installed).

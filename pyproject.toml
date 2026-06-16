@@ -81,6 +81,9 @@ lmdeploy = [
 mlx = [
     "mlx-vlm>=0.3.3,<0.4",
 ]
+lo = [
+    "unoserver>=3.0,<4",
+]
 pipeline = [
     "dill>=0.3.8,<1",
     "PyYAML>=6.0.1,<7",
@@ -124,6 +127,7 @@ mineros-models-download = "mineros.cli.models_download:download_models"
 mineros-api = "mineros.cli.fast_api:main"
 mineros-router = "mineros.cli.router:main"
 mineros-gradio = "mineros.cli.gradio_app:main"
+mineros-lo-server = "mineros.cli.lo_server:lo_server"
 
 [tool.setuptools.dynamic]
 version = { attr = "mineros.version.__version__" }
