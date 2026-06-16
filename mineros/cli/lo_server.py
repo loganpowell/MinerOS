@@ -10,12 +10,15 @@ import click
 def lo_server(host: str, port: int) -> None:
     """Start a LibreOffice HTTP conversion server (unoserver).
 
-    Accepts POST / with a multipart file and convert_to=pdf, returns PDF bytes.
-    Set MINEROS_LO_SERVER=http://<host>:<port> so mineros can use this server
-    to convert PPTX and XLSX files.
+    Exposes POST /request (multipart: file=<bytes>, convert-to=pdf).
+    Set MINEROS_LO_SERVER=http://<host>:<port> so mineros can use this
+    server to convert PPTX and XLSX files.
 
     Requires LibreOffice and the unoserver package:
         apt-get install libreoffice && pip install unoserver
+
+    Alternatively, run the pre-built image which includes the REST API:
+        docker run -p 2004:2004 libreofficedocker/libreoffice-unoserver:3.22-0147224
     """
     try:
         subprocess.run(
