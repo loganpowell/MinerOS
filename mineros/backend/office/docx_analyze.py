@@ -4,6 +4,7 @@ from io import BytesIO
 
 from loguru import logger
 from mineros.backend.office.model_output_to_middle_json import result_to_middle_json
+from mineros.backend.office.docx_image_table import promote_image_blocks_to_tables
 
 from mineros.model.docx.main import convert_binary
 
@@ -16,6 +17,10 @@ def office_docx_analyze(
 
     file_stream = BytesIO(file_bytes)
     results = convert_binary(file_stream)
+
+    # Promote landscape IMAGE blocks to TABLE blocks via VLM when available.
+    # This handles tables that were pasted as screenshots rather than XML tables.
+    results = [promote_image_blocks_to_tables(page) for page in results]
 
     infer_time = round(time.time() - infer_start, 2)
     safe_time = max(infer_time, 0.01)
